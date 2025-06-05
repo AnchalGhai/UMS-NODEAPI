@@ -1,14 +1,17 @@
-const pool = require('../db');
+const pool = require('../db'); // or wherever your DB pool is
 
-// GET all departments
 exports.getDepartments = async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM departments');
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    const result = await pool.query("SELECT * FROM departments");
+
+res.json(result.rows);
+
+  } catch (error) {
+    console.error("❌ Error in getDepartments:", error.message);
+    res.status(500).json({ error: "Server error while fetching departments" });
   }
 };
+
 
 // ADD department
 exports.addDepartment = async (req, res) => {
@@ -19,6 +22,65 @@ exports.addDepartment = async (req, res) => {
       [department_name]
     );
     res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// UPDATE department by id
+exports.updateDepartment = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const { department_name } = req.body;
+  console.log("Update request for id:", id, "with name:", department_name);
+  try {
+    const result = await pool.query(
+      'UPDATE departments SET department_name = $1 WHERE dept_id = $2 RETURNING *',
+      [department_name, id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Department not found" });
+    }
+
+    res.json({ message: "Department updated successfully", department: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// DELETE department by id
+exports.deleteDepartment = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    const result = await pool.query(
+      'DELETE FROM departments WHERE dept_id = $1',
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Department not found" });
+    }
+
+    res.json({ message: "Department deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// GET department by id
+exports.getDepartmentById = async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    const result = await pool.query(
+      'SELECT * FROM departments WHERE dept_id = $1',
+      [id]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Department not found" });
+    }
+
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
