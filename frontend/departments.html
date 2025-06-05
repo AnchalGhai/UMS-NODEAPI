@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Manage Departments</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .form-container {
+      width: 400px;
+      margin: 50px auto;
+      font-family: Arial, sans-serif;
+    }
+
+    input[type="text"] {
+      width: calc(100% - 110px);
+      padding: 8px;
+    }
+
+    button {
+      padding: 8px 12px;
+    }
+
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f0f0f0;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Department Management</h2>
+
+    <input type="text" id="deptName" placeholder="Department Name" />
+    <button onclick="addDepartment()">Add Department</button>
+
+    <table id="departmentsTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script>
+    async function fetchDepartments() {
+      try {
+        const res = await fetch('http://localhost:5000/api/departments');
+        const data = await res.json();
+        const table = document.querySelector("#departmentsTable tbody");
+        table.innerHTML = "";
+        data.forEach(dept => {
+          table.innerHTML += `<tr><td>${dept.id}</td><td>${dept.name}</td></tr>`;
+        });
+      } catch (err) {
+        console.error("Error fetching departments:", err);
+      }
+    }
+
+    async function addDepartment() {
+      const name = document.getElementById("deptName").value.trim();
+      if (!name) return alert("Please enter department name");
+
+      try {
+        await fetch('http://localhost:5000/api/departments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        document.getElementById("deptName").value = "";
+        fetchDepartments();
+      } catch (err) {
+        console.error("Error adding department:", err);
+        alert("Failed to add department.");
+      }
+    }
+
+    // Initial fetch
+    fetchDepartments();
+  </script>
+</body>
+</html>
