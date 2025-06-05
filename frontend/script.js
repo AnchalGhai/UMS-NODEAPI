@@ -39,30 +39,40 @@ if (signupForm) {
 
 
 // Login form handling
+// Login form handling
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-  const admin_id = document.getElementById("admin_id").value;
-  const password = document.getElementById("password").value;
 
-  try {
-    const res = await fetch("http://localhost:5000/api/admin/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ admin_id, password }),
-    });
+    const admin_id = document.getElementById("admin_id").value;
+    const password = document.getElementById("password").value;
 
-    const data = await res.json();
+    try {
+      const res = await fetch("http://localhost:5000/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_id, password }),
+      });
 
-    if (res.ok) {
-      document.getElementById("message").innerText = "✅ Login successful!";
-       const data = await res.json();
-       
-    } else {
-      document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
+      const data = await res.json();
+console.log("Login Response from backend:", data);
+      if (res.ok) {
+        document.getElementById("message").innerText = "✅ Login successful!";
+
+        // ✅ Store admin name from response
+         localStorage.setItem("adminName", data.name);
+         localStorage.setItem("adminId", data.admin_id);
+        // ✅ Redirect to dashboard
+        setTimeout(() => {
+          window.location.href = "dashboard.html";
+        }, 1000);
+      } else {
+        document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
+      }
+    } catch (error) {
+      document.getElementById("message").innerText = "❌ Network error";
+      console.error("Login Error:", error);
     }
-  } catch (error) {
-    document.getElementById("message").innerText = "❌ Network error";
-  }
-})};
+  });
+}

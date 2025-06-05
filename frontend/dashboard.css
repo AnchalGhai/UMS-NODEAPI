@@ -102,3 +102,19 @@ body {
   color: #333;
 }
 
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+#logoutBtn {
+  padding: 8px 14px;
+  font-size: 1em;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

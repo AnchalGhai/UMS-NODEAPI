@@ -1,5 +1,10 @@
-const adminName = localStorage.getItem("adminName") || "Admin";
-document.getElementById("adminName").innerText = adminName;
+const name = localStorage.getItem("adminName") || "Admin";
+
+const adminNameSpan = document.getElementById("adminName");
+if (adminNameSpan) {
+  adminNameSpan.innerText = name;
+}
+
 
 const formContainer = document.getElementById("formContainer");
 const tableData = document.getElementById("tableData");
@@ -24,6 +29,15 @@ sidebarButtons.forEach(btn => {
     fetchCurrentTableData();
   };
 });
+
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("adminName");
+    window.location.href = "index.html"; // Redirect to login
+  });
+}
+
 
 // Capitalize first letter helper
 function capitalize(str) {
