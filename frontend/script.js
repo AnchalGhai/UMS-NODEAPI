@@ -57,8 +57,8 @@ if (loginForm) {
 
     if (res.ok) {
       document.getElementById("message").innerText = "✅ Login successful!";
-      // Optionally, store token:
-      // localStorage.setItem("token", data.token);
+       const data = await res.json();
+       
     } else {
       document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
     }

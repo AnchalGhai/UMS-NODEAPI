@@ -1,58 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>UMS Dashboard</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .dashboard {
-      width: 400px;
-      background-color: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    .dashboard h2 {
-      margin-bottom: 20px;
-    }
-
-    .dashboard button {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      background-color: #007bff;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .dashboard button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>University Management Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css" />
 </head>
 <body>
-  <div class="dashboard">
-    <h2>Welcome to UMS</h2>
-    <button onclick="location.href='students.html'">Manage Students</button>
-    <button onclick="location.href='professors.html'">Manage Professors</button>
-    <button onclick="location.href='departments.html'">Manage Departments</button>
-    <button onclick="location.href='courses.html'">Manage Courses</button>
-    <button onclick="location.href='semesters.html'">Manage Semesters</button>
-    <button onclick="location.href='grades.html'">View Grades</button>
-    <button onclick="logout()">Logout</button>
+  <div class="sidebar">
+    <h1>Dashboard</h1>
+    <h2>Tables</h2>
+    <button class="active" data-table="departments">Departments</button>
+    <button data-table="students">Students</button>
   </div>
 
-  <script>
-    function logout() {
-      // Clear auth token if you're using one
-      alert('Logged out!');
-      window.location.href = 'index.html';
-    }
-  </script>
+  <div class="content">
+    <h1>Welcome, <span id="adminName">Admin</span></h1>
+    <h2 id="tableTitle">Departments</h2>
+    <div class="actions">
+      <button id="addBtn">Add</button>
+      <button id="updateBtn">Update</button>
+      <button id="deleteBtn">Delete</button>
+      <button id="viewBtn">View</button>
+    </div>
+    <div id="formContainer"></div>
+    <div id="tableData"></div>
+  </div>
+
+  <script src="dashboard.js"></script>
 </body>
 </html>
