@@ -20,7 +20,6 @@ sidebarButtons.forEach(btn => {
     currentTable = btn.getAttribute("data-table");
     tableTitle.innerText = capitalize(currentTable);
     clearAll();
-    // Optionally auto-show view on switch
     fetchCurrentTableData();
   };
 });
@@ -328,7 +327,6 @@ deleteBtn.onclick = () => {
 tableTitle.innerText = capitalize(currentTable);
 fetchDepartments();
 
-// Helper: fetch current table data for auto-refresh on tab switch
 function fetchCurrentTableData() {
   if (currentTable === "departments") fetchDepartments();
   else if (currentTable === "students") fetchStudents();
