@@ -38,7 +38,6 @@ try {
 // Student routes
 try {
   const studentRoutes = require('./routes/studentRoutes');
-  //console.log("studentRoutes:", studentRoutes);
   app.use('/api/students', studentRoutes);
   console.log("✅ Student routes loaded");
 } catch (error) {
@@ -55,6 +54,17 @@ try {
   console.error('❌ Failed to load professor routes:', error.message);
   console.error(error.stack);
 }
+
+try {
+  const courseRoutes = require('./routes/courseRoutes');
+ console.log('✅ courseRoutes typeof:', typeof courseRoutes);
+  app.use('/api/courses', courseRoutes);
+  console.log('✅ Course routes loaded');
+} catch (error) {
+  console.error('❌ Failed to load course routes:', error.message);
+  console.error(error.stack);
+}
+
 
 
 app.listen(port, () => {

@@ -87,16 +87,37 @@ function fetchDepartments() {
         tableData.innerHTML = "<p>No departments found.</p>";
         return;
       }
-      const list = data
-        .map((d) => `<div>${d.dept_id}. ${d.department_name}</div>`)
-        .join("");
-      tableData.innerHTML = `
+
+      let tableHTML = `
         <h3>List of Departments</h3>
-        ${list}
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Department ID</th>
+              <th>Department Name</th>
+            </tr>
+          </thead>
+          <tbody>
       `;
+
+      data.forEach((d) => {
+        tableHTML += `
+          <tr>
+            <td>${d.dept_id}</td>
+            <td>${d.department_name}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+      tableData.innerHTML = tableHTML;
     })
-    .catch((err) => console.error("Fetch Dept Error:", err));
+    .catch((err) => {
+      console.error("Fetch Departments Error:", err);
+      tableData.innerHTML = "<p>Error loading departments.</p>";
+    });
 }
+
 
 function showUpdateDepartmentForm() {
   clearAll();
@@ -218,19 +239,41 @@ function fetchStudents() {
         tableData.innerHTML = "<p>No students found.</p>";
         return;
       }
-      const list = data
-        .map(
-          (s) =>
-            `<div>${s.student_id}. ${s.name} (${s.email}), Dept: ${s.department_id}</div>`
-        )
-        .join("");
-      tableData.innerHTML = `
+
+      let tableHTML = `
         <h3>List of Students</h3>
-        ${list}
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Department ID</th>
+            </tr>
+          </thead>
+          <tbody>
       `;
+
+      data.forEach((s) => {
+        tableHTML += `
+          <tr>
+            <td>${s.student_id}</td>
+            <td>${s.name}</td>
+            <td>${s.email}</td>
+            <td>${s.department_id}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+      tableData.innerHTML = tableHTML;
     })
-    .catch((err) => console.error("Fetch Students Error:", err));
+    .catch((err) => {
+      console.error("Fetch Students Error:", err);
+      tableData.innerHTML = "<p>Error loading students.</p>";
+    });
 }
+
 
 function showUpdateStudentForm() {
   clearAll();
@@ -316,34 +359,376 @@ function showDeleteStudentForm() {
   };
 }
 
+
+
+// ----------- PROFESSORS MODULE ------------ //
+function showAddProfessorForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Professor</h3>
+    <input type="text" id="profName" placeholder="Professor Name" />
+    <input type="email" id="profEmail" placeholder="Professor Email" />
+    <input type="number" id="profDeptId" placeholder="Department ID" />
+    <button id="submitAddProfessor">Submit</button>
+  `;
+
+  document.getElementById("submitAddProfessor").onclick = () => {
+    const name = document.getElementById("profName").value.trim();
+    const email = document.getElementById("profEmail").value.trim();
+    const deptId = document.getElementById("profDeptId").value.trim();
+
+    if (!name || !email || !deptId) return alert("All fields are required.");
+
+    fetch("http://localhost:5000/api/professors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        department_id: Number(deptId),
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert("Professor added successfully");
+        clearAll();
+      })
+      .catch((err) => console.error("Add Professor Error:", err));
+  };
+}
+
+function fetchProfessors() {
+  clearAll();
+  fetch("http://localhost:5000/api/professors")
+    .then((res) => res.json())
+    .then((data) => {
+      if (!Array.isArray(data)) throw new Error("Unexpected data format");
+      if (data.length === 0) {
+        tableData.innerHTML = "<p>No professors found.</p>";
+        return;
+      }
+
+      let tableHTML = `
+        <h3>List of Professors</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Professor ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Department ID</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      data.forEach((p) => {
+        tableHTML += `
+          <tr>
+            <td>${p.professor_id}</td>
+            <td>${p.name}</td>
+            <td>${p.email}</td>
+            <td>${p.department_id}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Professors Error:", err);
+      tableData.innerHTML = "<p>Error loading professors.</p>";
+    });
+}
+
+
+function showUpdateProfessorForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Professor</h3>
+    <input type="number" id="updateProfId" placeholder="Enter Professor ID" />
+    <button id="loadProfBtn">Load</button>
+    <div id="updateProfFields" style="display:none;">
+      <input type="text" id="updateProfName" placeholder="New Name" />
+      <input type="email" id="updateProfEmail" placeholder="New Email" />
+      <input type="number" id="updateProfDeptId" placeholder="New Department ID" />
+      <button id="updateProfSubmitBtn">Update</button>
+    </div>
+  `;
+
+  document.getElementById("loadProfBtn").onclick = () => {
+    const id = document.getElementById("updateProfId").value.trim();
+    if (!id) return alert("Enter professor ID");
+
+    fetch(`http://localhost:5000/api/professors/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Professor not found");
+        return res.json();
+      })
+      .then((data) => {
+        document.getElementById("updateProfName").value = data.name;
+        document.getElementById("updateProfEmail").value = data.email;
+        document.getElementById("updateProfDeptId").value = data.department_id;
+        document.getElementById("updateProfFields").style.display = "block";
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  document.getElementById("updateProfSubmitBtn").onclick = () => {
+    const id = document.getElementById("updateProfId").value.trim();
+    const name = document.getElementById("updateProfName").value.trim();
+    const email = document.getElementById("updateProfEmail").value.trim();
+    const deptId = document.getElementById("updateProfDeptId").value.trim();
+
+    if (!name || !email || !deptId) return alert("All fields are required.");
+
+    fetch(`http://localhost:5000/api/professors/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        department_id: Number(deptId),
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert("Professor updated successfully");
+        clearAll();
+      })
+      .catch((err) => console.error("Update Professor Error:", err));
+  };
+}
+
+function showDeleteProfessorForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Professor</h3>
+    <input type="number" id="deleteProfId" placeholder="Enter Professor ID" />
+    <button id="deleteProfBtn">Delete</button>
+  `;
+
+  document.getElementById("deleteProfBtn").onclick = () => {
+    const id = document.getElementById("deleteProfId").value.trim();
+    if (!id) return alert("Enter professor ID");
+
+    if (!confirm(`Are you sure to delete professor ID ${id}?`)) return;
+
+    fetch(`http://localhost:5000/api/professors/${id}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Delete failed");
+        alert("Professor deleted successfully");
+        clearAll();
+      })
+      .catch((err) => alert(err.message));
+  };
+}
+
+// ----------- COURSES MODULE ------------ //
+
+function showAddCourseForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Course</h3>
+    <input type="text" id="courseCode" placeholder="Course Code" />
+    <input type="text" id="courseName" placeholder="Course Name" />
+    <input type="number" id="courseCredits" placeholder="Credits" />
+    <input type="number" id="courseDeptId" placeholder="Department ID" />
+    <button id="submitAddCourse">Submit</button>
+  `;
+
+  document.getElementById("submitAddCourse").onclick = () => {
+    const code = document.getElementById("courseCode").value.trim();
+    const name = document.getElementById("courseName").value.trim();
+    const credits = document.getElementById("courseCredits").value.trim();
+    const deptId = document.getElementById("courseDeptId").value.trim();
+
+    if (!code || !name || !credits || !deptId) return alert("All fields are required.");
+
+    fetch("http://localhost:5000/api/courses", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        course_code: code,
+        course_name: name,
+        credits: Number(credits),
+        department_id: Number(deptId),
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert("Course added successfully");
+        clearAll();
+      })
+      .catch((err) => console.error("Add Course Error:", err));
+  };
+}
+
+function fetchCourses() {
+  clearAll();
+  fetch("http://localhost:5000/api/courses")
+    .then((res) => res.json())
+    .then((data) => {
+      if (!Array.isArray(data)) throw new Error("Unexpected data format");
+      if (data.length === 0) {
+        tableData.innerHTML = "<p>No courses found.</p>";
+        return;
+      }
+
+      // Create table headers
+      let tableHTML = `
+        <h3>List of Courses</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Course Code</th>
+              <th>Course Name</th>
+              <th>Credits</th>
+              <th>Department ID</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // Add rows for each course
+      data.forEach((c) => {
+        tableHTML += `
+          <tr>
+            <td>${c.course_code}</td>
+            <td>${c.course_name}</td>
+            <td>${c.credits}</td>
+            <td>${c.department_id}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Courses Error:", err);
+      tableData.innerHTML = "<p>Error loading courses.</p>";
+    });
+}
+
+
+function showUpdateCourseForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Course</h3>
+    <input type="text" id="updateCourseCode" placeholder="Enter Course Code" />
+    <button id="loadCourseBtn">Load</button>
+    <div id="updateCourseFields" style="display:none;">
+      <input type="text" id="updateCourseName" placeholder="New Course Name" />
+      <input type="number" id="updateCourseCredits" placeholder="New Credits" />
+      <input type="number" id="updateCourseDeptId" placeholder="New Department ID" />
+      <button id="updateCourseSubmitBtn">Update</button>
+    </div>
+  `;
+
+  document.getElementById("loadCourseBtn").onclick = () => {
+    const code = document.getElementById("updateCourseCode").value.trim();
+    if (!code) return alert("Enter course code");
+
+    fetch(`http://localhost:5000/api/courses/${code}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Course not found");
+        return res.json();
+      })
+      .then((data) => {
+        document.getElementById("updateCourseName").value = data.course_name;
+        document.getElementById("updateCourseCredits").value = data.credits;
+        document.getElementById("updateCourseDeptId").value = data.department_id;
+        document.getElementById("updateCourseFields").style.display = "block";
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  document.getElementById("updateCourseSubmitBtn").onclick = () => {
+    const code = document.getElementById("updateCourseCode").value.trim();
+    const name = document.getElementById("updateCourseName").value.trim();
+    const credits = document.getElementById("updateCourseCredits").value.trim();
+    const deptId = document.getElementById("updateCourseDeptId").value.trim();
+
+    if (!name || !credits || !deptId) return alert("All fields are required.");
+
+    fetch(`http://localhost:5000/api/courses/${code}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        course_name: name,
+        credits: Number(credits),
+        department_id: Number(deptId),
+      }),
+    })
+      .then((res) => res.json())
+      .then(() => {
+        alert("Course updated successfully");
+        clearAll();
+      })
+      .catch((err) => console.error("Update Course Error:", err));
+  };
+}
+
+
+function showDeleteCourseForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Course</h3>
+    <input type="text" id="deleteCourseCode" placeholder="Enter Course Code" />
+    <button id="deleteCourseBtn">Delete</button>
+  `;
+
+  document.getElementById("deleteCourseBtn").onclick = () => {
+    const code = document.getElementById("deleteCourseCode").value.trim();
+    if (!code) return alert("Enter course code");
+
+    if (!confirm(`Are you sure to delete course Code ${code}?`)) return;
+
+    fetch(`http://localhost:5000/api/courses/${code}`, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Delete failed");
+        alert("Course deleted successfully");
+        clearAll();
+      })
+      .catch((err) => alert(err.message));
+  };
+}
+
 // ----------- BUTTON EVENTS ------------ //
 
 addBtn.onclick = () => {
   if (currentTable === "departments") showAddDepartmentForm();
   else if (currentTable === "students") showAddStudentForm();
-};
-
-viewBtn.onclick = () => {
-  if (currentTable === "departments") fetchDepartments();
-  else if (currentTable === "students") fetchStudents();
+  else if (currentTable === "professors") showAddProfessorForm(); // if exists
+  else if (currentTable === "courses") showAddCourseForm();
 };
 
 updateBtn.onclick = () => {
   if (currentTable === "departments") showUpdateDepartmentForm();
   else if (currentTable === "students") showUpdateStudentForm();
+  else if (currentTable === "professors") showUpdateProfessorForm(); 
+  else if (currentTable === "courses") showUpdateCourseForm();
 };
 
 deleteBtn.onclick = () => {
   if (currentTable === "departments") showDeleteDepartmentForm();
   else if (currentTable === "students") showDeleteStudentForm();
+  else if (currentTable === "professors") showDeleteProfessorForm(); 
+  else if (currentTable === "courses") showDeleteCourseForm();
 };
 
-// On page load, show departments view by default
-tableTitle.innerText = capitalize(currentTable);
-fetchDepartments();
-
-// Helper: fetch current table data for auto-refresh on tab switch
-function fetchCurrentTableData() {
+viewBtn.onclick = () => {
   if (currentTable === "departments") fetchDepartments();
   else if (currentTable === "students") fetchStudents();
-}
+  else if (currentTable === "professors") fetchProfessors(); 
+  else if (currentTable === "courses") fetchCourses();
+};
+
+
