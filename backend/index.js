@@ -38,14 +38,23 @@ try {
 // Student routes
 try {
   const studentRoutes = require('./routes/studentRoutes');
-  console.log("studentRoutes:", studentRoutes);
-app.use('/api/students', studentRoutes);
+  //console.log("studentRoutes:", studentRoutes);
+  app.use('/api/students', studentRoutes);
   console.log("✅ Student routes loaded");
 } catch (error) {
   console.error("❌ Failed to load student routes:", error.message);
   console.error(error.stack);
 }
 
+// Professor routes
+try {
+  const professorRoutes = require('./routes/professorRoutes');
+  app.use('/api/professors', professorRoutes);
+  console.log('✅ Professor routes loaded');
+} catch (error) {
+  console.error('❌ Failed to load professor routes:', error.message);
+  console.error(error.stack);
+}
 
 
 app.listen(port, () => {
