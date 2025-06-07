@@ -880,6 +880,422 @@ function fetchSemesters() {
     });
 }
 
+//-----Classrooms Module-------
+function showAddClassroomForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Classroom</h3>
+    <input type="text" id="classroomId" placeholder="Classroom ID" />
+    <input type="text" id="buildingName" placeholder="Building Name" />
+    <input type="text" id="roomNumber" placeholder="Room Number" />
+    <button id="submitAddClassroom">Add</button>
+  `;
+
+  document.getElementById('submitAddClassroom').onclick = async () => {
+    const id = document.getElementById('classroomId').value.trim();
+    const building = document.getElementById('buildingName').value.trim();
+    const room = document.getElementById('roomNumber').value.trim();
+
+    if (!id || !building || !room) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch('http://localhost:5000/api/classrooms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          classroom_id: id,
+          building_name: building,
+          room_number: room
+        })
+      });
+
+      if (res.ok) {
+        alert('Classroom added successfully');
+        clearAll();
+      } else {
+        const error = await res.text();
+        alert('Error: ' + error);
+      }
+    } catch (e) {
+      alert('Network error: ' + e.message);
+    }
+  };
+}
+
+function showUpdateClassroomForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Classroom</h3>
+    <input type="text" id="updateClassroomId" placeholder="Enter Classroom ID" />
+    <button id="loadClassroomBtn">Load</button>
+    <div id="updateClassroomFields" style="display:none;">
+      <input type="text" id="updateBuildingName" placeholder="New Building Name" />
+      <input type="text" id="updateRoomNumber" placeholder="New Room Number" />
+      <button id="updateClassroomSubmitBtn">Update</button>
+    </div>
+  `;
+
+  document.getElementById("loadClassroomBtn").onclick = () => {
+    const id = document.getElementById("updateClassroomId").value.trim();
+    if (!id) return alert("Enter classroom ID");
+
+    fetch(`http://localhost:5000/api/classrooms/${id}`)
+      .then(res => {
+        if (!res.ok) throw new Error("Classroom not found");
+        return res.json();
+      })
+      .then(data => {
+        document.getElementById("updateBuildingName").value = data.building_name;
+        document.getElementById("updateRoomNumber").value = data.room_number;
+        document.getElementById("updateClassroomFields").style.display = "block";
+      })
+      .catch(err => alert(err.message));
+  };
+
+  document.getElementById("updateClassroomSubmitBtn").onclick = () => {
+    const id = document.getElementById("updateClassroomId").value.trim();
+    const building = document.getElementById("updateBuildingName").value.trim();
+    const room = document.getElementById("updateRoomNumber").value.trim();
+
+    if (!building || !room) return alert("All fields are required.");
+
+    fetch(`http://localhost:5000/api/classrooms/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        building_name: building,
+        room_number: room
+      })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to update classroom");
+        return res.json();
+      })
+      .then(() => {
+        alert("Classroom updated successfully");
+        clearAll();
+      })
+      .catch(err => {
+        console.error("Update Classroom Error:", err);
+        alert("Error updating classroom.");
+      });
+  };
+}
+
+function showDeleteClassroomForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Classroom</h3>
+    <input type="text" id="classroomIdDelete" placeholder="Classroom ID" />
+    <button id="submitDeleteClassroom">Delete</button>
+  `;
+
+  document.getElementById('submitDeleteClassroom').onclick = async () => {
+    const id = document.getElementById('classroomIdDelete').value.trim();
+    if (!id) {
+      alert("Please enter classroom ID.");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete classroom ID ${id}?`)) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/classrooms/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        alert('Classroom deleted successfully');
+        clearAll();
+      } else {
+        const error = await res.text();
+        alert('Error: ' + error);
+      }
+    } catch (e) {
+      alert('Network error: ' + e.message);
+    }
+  };
+}
+
+
+function fetchClassrooms() {
+  clearAll();
+  fetch("http://localhost:5000/api/classrooms")
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data)) throw new Error("Unexpected data format");
+      if (data.length === 0) {
+        tableData.innerHTML = "<p>No classrooms found.</p>";
+        return;
+      }
+
+      let tableHTML = `
+        <h3>List of Classrooms</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Classroom ID</th>
+              <th>Building Name</th>
+              <th>Room Number</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      data.forEach((c) => {
+        tableHTML += `
+          <tr>
+            <td>${c.classroom_id}</td>
+            <td>${c.building_name}</td>
+            <td>${c.room_number}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Classrooms Error:", err);
+      tableData.innerHTML = "<p>Error loading classrooms.</p>";
+    });
+}
+
+// --- SCHEDULES MODULE --- //
+
+function showAddScheduleForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Schedule</h3>
+    <input type="text" id="course_code" placeholder="Course Code" />
+    <input type="number" id="professor_id" placeholder="Professor ID" />
+    <input type="text" id="classroom_id" placeholder="Classroom ID" />
+    <input type="number" id="semester_id" placeholder="Semester ID" />
+    <input type="text" id="day_of_week" placeholder="Day (Monday-Friday)" />
+    <input type="time" id="start_time" placeholder="Start Time" />
+    <input type="time" id="end_time" placeholder="End Time" />
+    <button id="submitAddSchedule">Submit</button>
+  `;
+
+  document.getElementById("submitAddSchedule").onclick = () => {
+    const course_code = document.getElementById("course_code").value.trim();
+    const professor_id = parseInt(document.getElementById("professor_id").value.trim());
+    const classroom_id = document.getElementById("classroom_id").value.trim();
+    const semester_id = parseInt(document.getElementById("semester_id").value.trim());
+    const day_of_week = document.getElementById("day_of_week").value.trim();
+    const start_time = document.getElementById("start_time").value.trim();
+    const end_time = document.getElementById("end_time").value.trim();
+
+    if (!course_code || !professor_id || !classroom_id || !semester_id || !day_of_week || !start_time || !end_time) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    fetch("http://localhost:5000/api/schedules", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        course_code,
+        professor_id,
+        classroom_id,
+        semester_id,
+        day_of_week,
+        start_time,
+        end_time,
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to add schedule");
+        return res.json();
+      })
+      .then(() => {
+        alert("Schedule added successfully");
+        clearAll();
+        fetchSchedules(); // refresh list
+      })
+      .catch((err) => console.error("Add Schedule Error:", err));
+  };
+}
+
+// Fetch and display all schedules
+function fetchSchedules() {
+  clearAll();
+  fetch("http://localhost:5000/api/schedules")
+    .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch schedules");
+      return res.json();
+    })
+    .then((data) => {
+      if (!Array.isArray(data)) throw new Error("Unexpected data format");
+      if (data.length === 0) {
+        tableData.innerHTML = "<p>No schedules found.</p>";
+        return;
+      }
+
+      let tableHTML = `
+        <h3>List of Schedules</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Course Code</th>
+              <th>Professor ID</th>
+              <th>Classroom ID</th>
+              <th>Semester ID</th>
+              <th>Day</th>
+              <th>Start Time</th>
+              <th>End Time</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      data.forEach((sch) => {
+        tableHTML += `
+          <tr>
+            <td>${sch.course_code}</td>
+            <td>${sch.professor_id}</td>
+            <td>${sch.classroom_id}</td>
+            <td>${sch.semester_id}</td>
+            <td>${sch.day_of_week}</td>
+            <td>${sch.start_time}</td>
+            <td>${sch.end_time}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Schedules Error:", err);
+      tableData.innerHTML = "<p>Error loading schedules.</p>";
+    });
+}
+
+// Show Update Schedule Form
+function showUpdateScheduleForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Schedule</h3>
+    <p>Provide all key fields to identify the schedule</p>
+    <input type="text" id="update_course_code" placeholder="Course Code" />
+    <input type="number" id="update_professor_id" placeholder="Professor ID" />
+    <input type="number" id="update_semester_id" placeholder="Semester ID" />
+    <input type="text" id="update_day_of_week" placeholder="Day (Monday-Friday)" />
+    <input type="time" id="update_start_time" placeholder="Start Time" />
+    <button id="loadScheduleBtn">Load Schedule</button>
+
+    <div id="updateScheduleFields" style="display:none; margin-top:10px;">
+      <input type="text" id="update_classroom_id" placeholder="Classroom ID" />
+      <input type="time" id="update_end_time" placeholder="End Time" />
+      <button id="submitUpdateSchedule">Update</button>
+    </div>
+  `;
+
+  document.getElementById("loadScheduleBtn").onclick = () => {
+    const course_code = document.getElementById("update_course_code").value.trim();
+    const professor_id = document.getElementById("update_professor_id").value.trim();
+    const semester_id = document.getElementById("update_semester_id").value.trim();
+    const day_of_week = document.getElementById("update_day_of_week").value.trim();
+    const start_time = document.getElementById("update_start_time").value.trim();
+
+    if (!course_code || !professor_id || !semester_id || !day_of_week || !start_time) {
+      alert("Please fill all key fields to load schedule");
+      return;
+    }
+
+    const url = `http://localhost:5000/api/schedules/${course_code}/${professor_id}/${semester_id}/${day_of_week}/${start_time}`;
+
+    fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error("Schedule not found");
+        return res.json();
+      })
+      .then((data) => {
+        document.getElementById("update_classroom_id").value = data.classroom_id || "";
+        document.getElementById("update_end_time").value = data.end_time || "";
+        document.getElementById("updateScheduleFields").style.display = "block";
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  document.getElementById("submitUpdateSchedule").onclick = () => {
+    const course_code = document.getElementById("update_course_code").value.trim();
+    const professor_id = parseInt(document.getElementById("update_professor_id").value.trim());
+    const semester_id = parseInt(document.getElementById("update_semester_id").value.trim());
+    const day_of_week = document.getElementById("update_day_of_week").value.trim();
+    const start_time = document.getElementById("update_start_time").value.trim();
+    const classroom_id = document.getElementById("update_classroom_id").value.trim();
+    const end_time = document.getElementById("update_end_time").value.trim();
+
+    if (!classroom_id || !end_time) {
+      alert("Please fill all update fields");
+      return;
+    }
+
+    const url = `http://localhost:5000/api/schedules/${course_code}/${professor_id}/${semester_id}/${day_of_week}/${start_time}`;
+
+    fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ classroom_id, end_time }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to update schedule");
+        alert("Schedule updated successfully");
+        clearAll();
+        fetchSchedules();
+      })
+      .catch((err) => console.error("Update Schedule Error:", err));
+  };
+}
+
+// Show Delete Schedule Form
+function showDeleteScheduleForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Schedule</h3>
+    <p>Provide all key fields to identify the schedule</p>
+    <input type="text" id="delete_course_code" placeholder="Course Code" />
+    <input type="number" id="delete_professor_id" placeholder="Professor ID" />
+    <input type="number" id="delete_semester_id" placeholder="Semester ID" />
+    <input type="text" id="delete_day_of_week" placeholder="Day (Monday-Friday)" />
+    <input type="time" id="delete_start_time" placeholder="Start Time" />
+    <button id="deleteScheduleBtn">Delete</button>
+  `;
+
+  document.getElementById("deleteScheduleBtn").onclick = () => {
+    const course_code = document.getElementById("delete_course_code").value.trim();
+    const professor_id = document.getElementById("delete_professor_id").value.trim();
+    const semester_id = document.getElementById("delete_semester_id").value.trim();
+    const day_of_week = document.getElementById("delete_day_of_week").value.trim();
+    const start_time = document.getElementById("delete_start_time").value.trim();
+
+    if (!course_code || !professor_id || !semester_id || !day_of_week || !start_time) {
+      alert("Please fill all key fields to delete schedule");
+      return;
+    }
+
+    const url = `http://localhost:5000/api/schedules/${course_code}/${professor_id}/${semester_id}/${day_of_week}/${start_time}`;
+
+    fetch(url, {
+      method: "DELETE",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to delete schedule");
+        alert("Schedule deleted successfully");
+        clearAll();
+        fetchSchedules();
+      })
+      .catch((err) => console.error("Delete Schedule Error:", err));
+  };
+}
+
+
+
+
 
 
 // ----------- BUTTON EVENTS ------------ //
@@ -890,6 +1306,8 @@ addBtn.onclick = () => {
   else if (currentTable === "professors") showAddProfessorForm(); 
   else if (currentTable === "courses") showAddCourseForm();
   else if (currentTable === "semesters") showAddSemesterForm();
+  else if (currentTable == "classrooms") showAddClassroomForm();
+  else if (currentTable === "schedules") showAddScheduleForm();
 };
 
 updateBtn.onclick = () => {
@@ -897,7 +1315,9 @@ updateBtn.onclick = () => {
   else if (currentTable === "students") showUpdateStudentForm();
   else if (currentTable === "professors") showUpdateProfessorForm(); 
   else if (currentTable === "courses") showUpdateCourseForm();
-   else if (currentTable === "semesters") showUpdateSemesterForm(); 
+  else if (currentTable === "semesters") showUpdateSemesterForm(); 
+  else if (currentTable == "classrooms") showUpdateClassroomForm();
+  else if (currentTable === "schedules") showUpdateScheduleForm();
 };
 
 deleteBtn.onclick = () => {
@@ -905,7 +1325,9 @@ deleteBtn.onclick = () => {
   else if (currentTable === "students") showDeleteStudentForm();
   else if (currentTable === "professors") showDeleteProfessorForm(); 
   else if (currentTable === "courses") showDeleteCourseForm();
-   else if (currentTable === "semesters") showDeleteSemesterForm();
+  else if (currentTable === "semesters") showDeleteSemesterForm();
+  else if (currentTable == "classrooms") showDeleteClassroomForm();
+  else if (currentTable === "schedules") showDeleteScheduleForm();
 };
 
 viewBtn.onclick = () => {
@@ -914,6 +1336,10 @@ viewBtn.onclick = () => {
   else if (currentTable === "professors") fetchProfessors(); 
   else if (currentTable === "courses") fetchCourses();
   else if (currentTable === "semesters") fetchSemesters();
+  else if (currentTable == "classrooms") fetchClassrooms();
+  else if (currentTable === "schedules") fetchSchedules();
 };
+
+
 
 
