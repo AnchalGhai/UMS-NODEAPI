@@ -21,7 +21,7 @@ try {
   app.use("/api/admin", adminRoutes);
   console.log("Admin routes loaded");
 } catch (error) {
-  console.error("❌ Failed to load admin routes:", error.message);
+  console.error("Failed to load admin routes:", error.message);
   console.error(error.stack);
 }
 
@@ -31,7 +31,7 @@ try {
   app.use("/api/departments", departmentRoutes);
   console.log("Department routes loaded");
 } catch (error) {
-  console.error("❌ Failed to load department routes:", error.message);
+  console.error("Failed to load department routes:", error.message);
   console.error(error.stack);
 }
 
@@ -41,7 +41,7 @@ try {
   app.use('/api/students', studentRoutes);
   console.log("Student routes loaded");
 } catch (error) {
-  console.error("❌ Failed to load student routes:", error.message);
+  console.error(" Failed to load student routes:", error.message);
   console.error(error.stack);
 }
 
@@ -51,7 +51,7 @@ try {
   app.use('/api/professors', professorRoutes);
   console.log("Professor routes loaded");
 } catch (error) {
-  console.error('❌ Failed to load professor routes:', error.message);
+  console.error('Failed to load professor routes:', error.message);
   console.error(error.stack);
 }
 
@@ -62,7 +62,7 @@ try {
   app.use('/api/courses', courseRoutes);
   console.log("Course routes loaded");
 } catch (error) {
-  console.error('❌ Failed to load course routes:', error.message);
+  console.error('Failed to load course routes:', error.message);
   console.error(error.stack);
 }
 
@@ -72,7 +72,7 @@ try {
   app.use('/api/semesters', semesterRoutes);
   console.log("Semester routes loaded");
 } catch (error) {
-  console.error('❌ Failed to load semester routes:', error.message);
+  console.error('Failed to load semester routes:', error.message);
   console.error(error.stack);
 }
 
@@ -82,7 +82,7 @@ try {
   app.use('/api/classrooms', classroomRoutes);
   console.log("Classroom routes loaded");
 } catch (error) {
-  console.error('❌ Failed to load classroom routes:', error.message);
+  console.error('Failed to load classroom routes:', error.message);
   console.error(error.stack);
 }
 
@@ -92,10 +92,19 @@ try {
   app.use('/api/schedules', scheduleRoutes);
   console.log("Schedule routes loaded");
 } catch (error) {
-  console.error('❌ Failed to load schedule routes:', error.message);
+  console.error('Failed to load schedule routes:', error.message);
   console.error(error.stack);
 }
 
+//grades routes
+try {
+  const gradeRoutes = require('./routes/gradesRoutes');
+  app.use('/api/grades', gradeRoutes);
+  console.log("Grades routes loaded");
+} catch (error) {
+  console.error('Failed to load grades routes:', error.message);
+  console.error(error.stack);
+}
 
 
 app.listen(port, () => {

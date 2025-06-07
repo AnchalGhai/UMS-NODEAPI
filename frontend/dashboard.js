@@ -1240,13 +1240,21 @@ function showUpdateScheduleForm() {
     fetch(url, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ classroom_id, end_time }),
+      body: JSON.stringify({
+        new_course_code: course_code,
+        new_professor_id: professor_id,
+        new_semester_id: semester_id,
+        new_day_of_week: day_of_week,
+        new_start_time: start_time,
+        classroom_id,
+        end_time
+}),
+
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to update schedule");
         alert("Schedule updated successfully");
         clearAll();
-        fetchSchedules();
       })
       .catch((err) => console.error("Update Schedule Error:", err));
   };
@@ -1294,6 +1302,176 @@ function showDeleteScheduleForm() {
 }
 
 
+//-------- Grades Module --------
+function showAddGradeForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Grade</h3>
+    <input type="number" id="addStudentId" placeholder="Student ID" />
+    <input type="text" id="addCourseCode" placeholder="Course Code" />
+    <input type="number" id="addSemesterId" placeholder="Semester ID" />
+    <input type="text" id="addGradeValue" placeholder="Grade (A/B/C/D/F)" />
+    <button id="submitAddGrade">Add Grade</button>
+  `;
+
+  document.getElementById("submitAddGrade").onclick = async () => {
+    const student_id = document.getElementById("addStudentId").value.trim();
+    const course_code = document.getElementById("addCourseCode").value.trim();
+    const semester_id = document.getElementById("addSemesterId").value.trim();
+    const grade = document.getElementById("addGradeValue").value.trim();
+
+    if (!student_id || !course_code || !semester_id || !grade) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/grades", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id, course_code, semester_id, grade }),
+      });
+
+      if (res.ok) {
+        alert("Grade added successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function showUpdateGradeForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Grade</h3>
+    <input type="number" id="updateStudentId" placeholder="Student ID" />
+    <input type="text" id="updateCourseCode" placeholder="Course Code" />
+    <input type="number" id="updateSemesterId" placeholder="Semester ID" />
+    <input type="text" id="newGradeValue" placeholder="New Grade (A/B/C/D/F)" />
+    <button id="submitUpdateGrade">Update Grade</button>
+  `;
+
+  document.getElementById("submitUpdateGrade").onclick = async () => {
+    const student_id = document.getElementById("updateStudentId").value.trim();
+    const course_code = document.getElementById("updateCourseCode").value.trim();
+    const semester_id = document.getElementById("updateSemesterId").value.trim();
+    const grade = document.getElementById("newGradeValue").value.trim();
+
+    if (!student_id || !course_code || !semester_id || !grade) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/grades/${student_id}/${course_code}/${semester_id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ grade }),
+      });
+
+      if (res.ok) {
+        alert("Grade updated successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function showDeleteGradeForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Grade</h3>
+    <input type="number" id="deleteStudentId" placeholder="Student ID" />
+    <input type="text" id="deleteCourseCode" placeholder="Course Code" />
+    <input type="number" id="deleteSemesterId" placeholder="Semester ID" />
+    <button id="submitDeleteGrade">Delete Grade</button>
+  `;
+
+  document.getElementById("submitDeleteGrade").onclick = async () => {
+    const student_id = document.getElementById("deleteStudentId").value.trim();
+    const course_code = document.getElementById("deleteCourseCode").value.trim();
+    const semester_id = document.getElementById("deleteSemesterId").value.trim();
+
+    if (!student_id || !course_code || !semester_id) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete this grade?`)) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/grades/${student_id}/${course_code}/${semester_id}`, {
+        method: "DELETE"
+      });
+
+      if (res.ok) {
+        alert("Grade deleted successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function fetchGrades() {
+  clearAll();
+  fetch("http://localhost:5000/api/grades")
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        tableData.innerHTML = "<p>No grades found.</p>";
+        return;
+      }
+
+      let tableHTML = `
+        <h3>All Grades</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Course Code</th>
+              <th>Semester ID</th>
+              <th>Grade</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      data.forEach(g => {
+        tableHTML += `
+          <tr>
+            <td>${g.student_id}</td>
+            <td>${g.course_code}</td>
+            <td>${g.semester_id}</td>
+            <td>${g.grade}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += "</tbody></table>";
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Grades Error:", err);
+      tableData.innerHTML = "<p>Error loading grades.</p>";
+    });
+}
+
+
 
 
 
@@ -1308,6 +1486,7 @@ addBtn.onclick = () => {
   else if (currentTable === "semesters") showAddSemesterForm();
   else if (currentTable == "classrooms") showAddClassroomForm();
   else if (currentTable === "schedules") showAddScheduleForm();
+  else if (currentTable === "grades") showAddGradeForm();
 };
 
 updateBtn.onclick = () => {
@@ -1318,6 +1497,7 @@ updateBtn.onclick = () => {
   else if (currentTable === "semesters") showUpdateSemesterForm(); 
   else if (currentTable == "classrooms") showUpdateClassroomForm();
   else if (currentTable === "schedules") showUpdateScheduleForm();
+   else if (currentTable === "grades") showUpdateGradeForm();
 };
 
 deleteBtn.onclick = () => {
@@ -1328,6 +1508,7 @@ deleteBtn.onclick = () => {
   else if (currentTable === "semesters") showDeleteSemesterForm();
   else if (currentTable == "classrooms") showDeleteClassroomForm();
   else if (currentTable === "schedules") showDeleteScheduleForm();
+   else if (currentTable === "grades") showDeleteGradeForm();
 };
 
 viewBtn.onclick = () => {
@@ -1338,6 +1519,7 @@ viewBtn.onclick = () => {
   else if (currentTable === "semesters") fetchSemesters();
   else if (currentTable == "classrooms") fetchClassrooms();
   else if (currentTable === "schedules") fetchSchedules();
+   else if (currentTable === "grades") fetchGrades();
 };
 
 
