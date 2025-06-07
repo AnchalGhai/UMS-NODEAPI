@@ -701,13 +701,195 @@ function showDeleteCourseForm() {
   };
 }
 
+// --- SEMESTERS MODULE ---
+
+function showAddSemesterForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Semester</h3>
+    <input type="text" id="semesterName" placeholder="Semester Name" />
+    <input type="number" id="semesterYear" placeholder="Year" />
+    <button id="submitAddSemester">Add</button>
+  `;
+
+  document.getElementById('submitAddSemester').onclick = async () => {
+    const name = document.getElementById('semesterName').value.trim();
+    const year = parseInt(document.getElementById('semesterYear').value.trim());
+
+    if (!name || !year) {
+      alert("Please enter semester name and year.");
+      return;
+    }
+
+    try {
+      const res = await fetch('http://localhost:5000/api/semesters', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ semester_name: name, year })
+      });
+      if (res.ok) {
+        alert('Semester added successfully');
+        formContainer.innerHTML = '';
+      } else {
+        const error = await res.text();
+        alert('Error: ' + error);
+      }
+    } catch (e) {
+      alert('Network error: ' + e.message);
+    }
+  };
+}
+
+function showUpdateSemesterForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Semester</h3>
+    <input type="number" id="updateSemesterId" placeholder="Enter Semester ID" />
+    <button id="loadSemesterBtn">Load</button>
+    <div id="updateSemesterFields" style="display:none;">
+      <input type="text" id="updateSemesterName" placeholder="New Semester Name" />
+      <input type="number" id="updateSemesterYear" placeholder="New Year" />
+      <button id="updateSemesterSubmitBtn">Update</button>
+    </div>
+  `;
+
+  document.getElementById("loadSemesterBtn").onclick = () => {
+    const id = document.getElementById("updateSemesterId").value.trim();
+    if (!id) return alert("Enter semester ID");
+
+    fetch(`http://localhost:5000/api/semesters/${id}`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Semester not found");
+        return res.json();
+      })
+      .then((data) => {
+        document.getElementById("updateSemesterName").value = data.semester_name;
+        document.getElementById("updateSemesterYear").value = data.year;
+        document.getElementById("updateSemesterFields").style.display = "block";
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  document.getElementById("updateSemesterSubmitBtn").onclick = () => {
+    const id = document.getElementById("updateSemesterId").value.trim();
+    const name = document.getElementById("updateSemesterName").value.trim();
+    const year = document.getElementById("updateSemesterYear").value.trim();
+
+    if (!name || !year) return alert("All fields are required.");
+
+    fetch(`http://localhost:5000/api/semesters/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        semester_name: name,
+        year: Number(year),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to update semester");
+        return res.json();
+      })
+      .then(() => {
+        alert("Semester updated successfully");
+        clearAll();
+      })
+      .catch((err) => {
+        console.error("Update Semester Error:", err);
+        alert("Error updating semester.");
+      });
+  };
+}
+
+function showDeleteSemesterForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Semester</h3>
+    <input type="number" id="semesterIdDelete" placeholder="Semester ID" />
+    <button id="submitDeleteSemester">Delete</button>
+  `;
+
+  document.getElementById('submitDeleteSemester').onclick = async () => {
+    const id = parseInt(document.getElementById('semesterIdDelete').value.trim());
+    if (!id) {
+      alert("Please enter semester ID.");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete semester ID ${id}?`)) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/semesters/${id}`, {
+        method: 'DELETE'
+      });
+      if (res.ok) {
+        alert('Semester deleted successfully');
+        formContainer.innerHTML = '';
+      } else {
+        const error = await res.text();
+        alert('Error: ' + error);
+      }
+    } catch (e) {
+      alert('Network error: ' + e.message);
+    }
+  };
+}
+
+function fetchSemesters() {
+  clearAll();
+  fetch("http://localhost:5000/api/semesters")
+    .then((res) => res.json())
+    .then((data) => {
+      if (!Array.isArray(data)) throw new Error("Unexpected data format");
+      if (data.length === 0) {
+        tableData.innerHTML = "<p>No semesters found.</p>";
+        return;
+      }
+
+      // Create table headers
+      let tableHTML = `
+        <h3>List of Semesters</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Semester ID</th>
+              <th>Semester Name</th>
+              <th>Year</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      // Add rows for each semester
+      data.forEach((s) => {
+        tableHTML += `
+          <tr>
+            <td>${s.semester_id}</td>
+            <td>${s.semester_name}</td>
+            <td>${s.year}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += `</tbody></table>`;
+
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Semesters Error:", err);
+      tableData.innerHTML = "<p>Error loading semesters.</p>";
+    });
+}
+
+
+
 // ----------- BUTTON EVENTS ------------ //
 
 addBtn.onclick = () => {
   if (currentTable === "departments") showAddDepartmentForm();
   else if (currentTable === "students") showAddStudentForm();
-  else if (currentTable === "professors") showAddProfessorForm(); // if exists
+  else if (currentTable === "professors") showAddProfessorForm(); 
   else if (currentTable === "courses") showAddCourseForm();
+  else if (currentTable === "semesters") showAddSemesterForm();
 };
 
 updateBtn.onclick = () => {
@@ -715,6 +897,7 @@ updateBtn.onclick = () => {
   else if (currentTable === "students") showUpdateStudentForm();
   else if (currentTable === "professors") showUpdateProfessorForm(); 
   else if (currentTable === "courses") showUpdateCourseForm();
+   else if (currentTable === "semesters") showUpdateSemesterForm(); 
 };
 
 deleteBtn.onclick = () => {
@@ -722,6 +905,7 @@ deleteBtn.onclick = () => {
   else if (currentTable === "students") showDeleteStudentForm();
   else if (currentTable === "professors") showDeleteProfessorForm(); 
   else if (currentTable === "courses") showDeleteCourseForm();
+   else if (currentTable === "semesters") showDeleteSemesterForm();
 };
 
 viewBtn.onclick = () => {
@@ -729,6 +913,7 @@ viewBtn.onclick = () => {
   else if (currentTable === "students") fetchStudents();
   else if (currentTable === "professors") fetchProfessors(); 
   else if (currentTable === "courses") fetchCourses();
+  else if (currentTable === "semesters") fetchSemesters();
 };
 
 

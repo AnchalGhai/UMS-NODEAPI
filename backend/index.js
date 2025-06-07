@@ -55,15 +55,27 @@ try {
   console.error(error.stack);
 }
 
+// Course Routes
 try {
   const courseRoutes = require('./routes/courseRoutes');
- console.log('✅ courseRoutes typeof:', typeof courseRoutes);
+ //console.log('✅ courseRoutes typeof:', typeof courseRoutes);
   app.use('/api/courses', courseRoutes);
   console.log('✅ Course routes loaded');
 } catch (error) {
   console.error('❌ Failed to load course routes:', error.message);
   console.error(error.stack);
 }
+
+// Semester routes
+try {
+  const semesterRoutes = require('./routes/semesterRoutes');
+  app.use('/api/semesters', semesterRoutes);
+  console.log('✅ Semester routes loaded');
+} catch (error) {
+  console.error('❌ Failed to load semester routes:', error.message);
+  console.error(error.stack);
+}
+
 
 
 
