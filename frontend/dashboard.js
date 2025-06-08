@@ -1471,7 +1471,362 @@ function fetchGrades() {
     });
 }
 
+// -------- Enrollments Module --------
+function showAddEnrollmentForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Enrollment</h3>
+    <input type="number" id="addStudentId" placeholder="Student ID" />
+    <input type="text" id="addCourseCode" placeholder="Course Code" />
+    <input type="number" id="addSemesterId" placeholder="Semester ID" />
+    <input type="date" id="addEnrollmentDate" placeholder="Enrollment Date" />
+    <button id="submitAddEnrollment">Add Enrollment</button>
+  `;
 
+  document.getElementById("submitAddEnrollment").onclick = async () => {
+    const student_id = document.getElementById("addStudentId").value.trim();
+    const course_code = document.getElementById("addCourseCode").value.trim();
+    const semester_id = document.getElementById("addSemesterId").value.trim();
+    const enrollment_date = document.getElementById("addEnrollmentDate").value;
+
+    if (!student_id || !course_code || !semester_id || !enrollment_date) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/enrollments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id, course_code, semester_id, enrollment_date }),
+      });
+
+      if (res.ok) {
+        alert("Enrollment added successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function showUpdateEnrollmentForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Enrollment Date</h3>
+    <input type="number" id="updateStudentId" placeholder="Student ID" />
+    <input type="text" id="updateCourseCode" placeholder="Course Code" />
+    <input type="number" id="updateSemesterId" placeholder="Semester ID" />
+    <input type="date" id="newEnrollmentDate" placeholder="New Enrollment Date" />
+    <button id="submitUpdateEnrollment">Update Enrollment</button>
+  `;
+
+  document.getElementById("submitUpdateEnrollment").onclick = async () => {
+    const student_id = document.getElementById("updateStudentId").value.trim();
+    const course_code = document.getElementById("updateCourseCode").value.trim();
+    const semester_id = document.getElementById("updateSemesterId").value.trim();
+    const enrollment_date = document.getElementById("newEnrollmentDate").value;
+
+    if (!student_id || !course_code || !semester_id || !enrollment_date) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/enrollments/${student_id}/${course_code}/${semester_id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ enrollment_date }),
+      });
+
+      if (res.ok) {
+        alert("Enrollment updated successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function showDeleteEnrollmentForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Enrollment</h3>
+    <input type="number" id="deleteStudentId" placeholder="Student ID" />
+    <input type="text" id="deleteCourseCode" placeholder="Course Code" />
+    <input type="number" id="deleteSemesterId" placeholder="Semester ID" />
+    <button id="submitDeleteEnrollment">Delete Enrollment</button>
+  `;
+
+  document.getElementById("submitDeleteEnrollment").onclick = async () => {
+    const student_id = document.getElementById("deleteStudentId").value.trim();
+    const course_code = document.getElementById("deleteCourseCode").value.trim();
+    const semester_id = document.getElementById("deleteSemesterId").value.trim();
+
+    if (!student_id || !course_code || !semester_id) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    if (!confirm(`Are you sure you want to delete this enrollment?`)) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/enrollments/${student_id}/${course_code}/${semester_id}`, {
+        method: "DELETE"
+      });
+
+      if (res.ok) {
+        alert("Enrollment deleted successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function fetchEnrollments() {
+  clearAll();
+  fetch("http://localhost:5000/api/enrollments")
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        tableData.innerHTML = "<p>No enrollments found.</p>";
+        return;
+      }
+
+      let tableHTML = `
+        <h3>All Enrollments</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Course Code</th>
+              <th>Semester ID</th>
+              <th>Enrollment Date</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      data.forEach(e => {
+        tableHTML += `
+          <tr>
+            <td>${e.student_id}</td>
+            <td>${e.course_code}</td>
+            <td>${e.semester_id}</td>
+            <td>${e.enrollment_date}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += "</tbody></table>";
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Enrollments Error:", err);
+      tableData.innerHTML = "<p>Error loading enrollments.</p>";
+    });
+}
+
+//Atendance module
+function showAddAttendanceForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Add Attendance</h3>
+    <input type="number" id="addAttendanceStudentId" placeholder="Student ID" />
+    <input type="text" id="addAttendanceCourseCode" placeholder="Course Code" />
+    <input type="number" id="addAttendanceSemesterId" placeholder="Semester ID" />
+    <input type="date" id="addAttendanceDate" />
+    <select id="addAttendanceStatus">
+      <option value="">Select Status</option>
+      <option value="Present">Present</option>
+      <option value="Absent">Absent</option>
+      <option value="Late">Late</option>
+    </select>
+    <button id="submitAddAttendance">Add Attendance</button>
+  `;
+
+  document.getElementById("submitAddAttendance").onclick = async () => {
+    const student_id = document.getElementById("addAttendanceStudentId").value.trim();
+    const course_code = document.getElementById("addAttendanceCourseCode").value.trim();
+    const semester_id = document.getElementById("addAttendanceSemesterId").value.trim();
+    const date = document.getElementById("addAttendanceDate").value;
+    const status = document.getElementById("addAttendanceStatus").value;
+
+    if (!student_id || !course_code || !semester_id || !date || !status) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/api/attendance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ student_id, course_code, semester_id, date, status }),
+      });
+
+      if (res.ok) {
+        alert("Attendance added successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function showUpdateAttendanceForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Update Attendance Status</h3>
+    <input type="number" id="updateAttendanceStudentId" placeholder="Student ID" />
+    <input type="text" id="updateAttendanceCourseCode" placeholder="Course Code" />
+    <input type="number" id="updateAttendanceSemesterId" placeholder="Semester ID" />
+    <input type="date" id="updateAttendanceDate" />
+    <select id="updateAttendanceStatus">
+      <option value="">Select New Status</option>
+      <option value="Present">Present</option>
+      <option value="Absent">Absent</option>
+      <option value="Late">Late</option>
+    </select>
+    <button id="submitUpdateAttendance">Update Attendance</button>
+  `;
+
+  document.getElementById("submitUpdateAttendance").onclick = async () => {
+    const student_id = document.getElementById("updateAttendanceStudentId").value.trim();
+    const course_code = document.getElementById("updateAttendanceCourseCode").value.trim();
+    const semester_id = document.getElementById("updateAttendanceSemesterId").value.trim();
+    const date = document.getElementById("updateAttendanceDate").value;
+    const status = document.getElementById("updateAttendanceStatus").value;
+
+    if (!student_id || !course_code || !semester_id || !date || !status) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/attendance/${student_id}/${course_code}/${semester_id}/${date}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status }),
+      });
+
+      if (res.ok) {
+        alert("Attendance updated successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function showDeleteAttendanceForm() {
+  clearAll();
+  formContainer.innerHTML = `
+    <h3>Delete Attendance</h3>
+    <input type="number" id="deleteAttendanceStudentId" placeholder="Student ID" />
+    <input type="text" id="deleteAttendanceCourseCode" placeholder="Course Code" />
+    <input type="number" id="deleteAttendanceSemesterId" placeholder="Semester ID" />
+    <input type="date" id="deleteAttendanceDate" />
+    <button id="submitDeleteAttendance">Delete Attendance</button>
+  `;
+
+  document.getElementById("submitDeleteAttendance").onclick = async () => {
+    const student_id = document.getElementById("deleteAttendanceStudentId").value.trim();
+    const course_code = document.getElementById("deleteAttendanceCourseCode").value.trim();
+    const semester_id = document.getElementById("deleteAttendanceSemesterId").value.trim();
+    const date = document.getElementById("deleteAttendanceDate").value;
+
+    if (!student_id || !course_code || !semester_id || !date) {
+      alert("Please fill all fields.");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to delete this attendance record?")) return;
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/attendance/${student_id}/${course_code}/${semester_id}/${date}`, {
+        method: "DELETE"
+      });
+
+      if (res.ok) {
+        alert("Attendance deleted successfully.");
+        clearAll();
+      } else {
+        const err = await res.text();
+        alert("Error: " + err);
+      }
+    } catch (e) {
+      alert("Network error: " + e.message);
+    }
+  };
+}
+
+function fetchAttendance() {
+  clearAll();
+  fetch("http://localhost:5000/api/attendance")
+    .then(res => res.json())
+    .then(data => {
+      if (!Array.isArray(data) || data.length === 0) {
+        tableData.innerHTML = "<p>No attendance records found.</p>";
+        return;
+      }
+
+      let tableHTML = `
+        <h3>All Attendance Records</h3>
+        <table border="1" cellpadding="5" cellspacing="0">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Course Code</th>
+              <th>Semester ID</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      data.forEach(a => {
+        const formattedDate = new Date(a.date).toISOString().split("T")[0];
+        tableHTML += `
+          <tr>
+            <td>${a.student_id}</td>
+            <td>${a.course_code}</td>
+            <td>${a.semester_id}</td>
+            <td>${formattedDate}</td>
+            <td>${a.status}</td>
+          </tr>
+        `;
+      });
+
+      tableHTML += "</tbody></table>";
+      tableData.innerHTML = tableHTML;
+    })
+    .catch((err) => {
+      console.error("Fetch Attendance Error:", err);
+      tableData.innerHTML = "<p>Error loading attendance records.</p>";
+    });
+}
 
 
 
@@ -1487,6 +1842,8 @@ addBtn.onclick = () => {
   else if (currentTable == "classrooms") showAddClassroomForm();
   else if (currentTable === "schedules") showAddScheduleForm();
   else if (currentTable === "grades") showAddGradeForm();
+  else if (currentTable === "enrollments") showAddEnrollmentForm();
+  else if (currentTable === "attendance") showAddAttendanceForm();
 };
 
 updateBtn.onclick = () => {
@@ -1497,7 +1854,9 @@ updateBtn.onclick = () => {
   else if (currentTable === "semesters") showUpdateSemesterForm(); 
   else if (currentTable == "classrooms") showUpdateClassroomForm();
   else if (currentTable === "schedules") showUpdateScheduleForm();
-   else if (currentTable === "grades") showUpdateGradeForm();
+  else if (currentTable === "grades") showUpdateGradeForm();
+  else if (currentTable === "enrollments") showUpdateEnrollmentForm();
+  else if (currentTable === "attendance") showUpdateAttendanceForm();
 };
 
 deleteBtn.onclick = () => {
@@ -1508,7 +1867,9 @@ deleteBtn.onclick = () => {
   else if (currentTable === "semesters") showDeleteSemesterForm();
   else if (currentTable == "classrooms") showDeleteClassroomForm();
   else if (currentTable === "schedules") showDeleteScheduleForm();
-   else if (currentTable === "grades") showDeleteGradeForm();
+  else if (currentTable === "grades") showDeleteGradeForm();
+  else if (currentTable === "enrollments") showDeleteEnrollmentForm();
+  else if (currentTable === "attendance") showDeleteAttendanceForm();
 };
 
 viewBtn.onclick = () => {
@@ -1519,7 +1880,9 @@ viewBtn.onclick = () => {
   else if (currentTable === "semesters") fetchSemesters();
   else if (currentTable == "classrooms") fetchClassrooms();
   else if (currentTable === "schedules") fetchSchedules();
-   else if (currentTable === "grades") fetchGrades();
+  else if (currentTable === "grades") fetchGrades();
+  else if (currentTable === "enrollments") fetchEnrollments();
+  else if (currentTable === "attendance") fetchAttendance();
 };
 
 

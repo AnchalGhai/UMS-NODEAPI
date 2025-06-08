@@ -107,6 +107,27 @@ try {
 }
 
 
+//enrollments routes
+try {
+  const enrollmentsRoutes = require('./routes/enrollmentsRoutes');
+  app.use('/api/enrollments', enrollmentsRoutes);
+  console.log("Enrollments routes loaded");
+} catch (error) {
+  console.error('Failed to load enrollments routes:', error.message);
+  console.error(error.stack);
+}
+
+//Attendance routes
+try {
+  const attendanceRoutes = require('./routes/attendanceRoutes');
+  app.use('/api/attendance', attendanceRoutes);
+  console.log("Attendance routes loaded");
+} catch (error) {
+  console.error('Failed to load attendance routes:', error.message);
+  console.error(error.stack);
+}
+
+
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
 });
