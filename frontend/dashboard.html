@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>University Management Dashboard</title>
   <link rel="stylesheet" href="dashboard.css" />
-  
-  <!-- ✅ Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="sidebar">
@@ -31,17 +28,24 @@
     </div>
 
     <h2 id="tableTitle">Departments</h2>
+
     <div class="actions">
-      <button id="addBtn">Add</button>
-      <button id="updateBtn">Update</button>
-      <button id="deleteBtn">Delete</button>
-      <button id="viewBtn">View</button>
+      <div class="main-actions">
+        <button id="addBtn">Add</button>
+        <button id="updateBtn">Update</button>
+        <button id="deleteBtn">Delete</button>
+        <button id="viewBtn">View</button>
+      </div>
+      <button id="reportBtn" style="display: none;">Report</button>
     </div>
 
     <div id="formContainer"></div>
     <div id="tableData"></div>
+
+         <canvas id="reportChart" style="width:100%;max-width:700px"></canvas>
   </div>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   <script src="dashboard.js"></script>
 </body>
 </html>

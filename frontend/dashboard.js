@@ -195,47 +195,6 @@ function showDeleteDepartmentForm() {
 
 // ----------- STUDENTS MODULE ------------ //
 
-// Helper to clear UI sections and reset action buttons
-function clearAll() {
-  formContainer.innerHTML = '';
-  tableData.innerHTML = '';
-  const actionsDiv = document.querySelector('.actions');
-  if (actionsDiv) {
-    actionsDiv.innerHTML = `
-      <button id="addBtn">Add</button>
-      <button id="updateBtn">Update</button>
-      <button id="deleteBtn">Delete</button>
-      <button id="viewBtn">View</button>
-    `;
-    // Attach click listeners to new buttons
-    document.getElementById('addBtn').onclick = showAddStudentForm;
-    document.getElementById('updateBtn').onclick = showUpdateStudentForm;
-    document.getElementById('deleteBtn').onclick = showDeleteStudentForm;
-    document.getElementById('viewBtn').onclick = fetchStudents;
-  }
-}
-
-// Sidebar buttons click handler
-document.querySelectorAll('.sidebar button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.sidebar button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    const table = btn.getAttribute('data-table');
-    document.getElementById('tableTitle').textContent = btn.textContent;
-
-    clearAll();
-
-    if (table === 'students') {
-      fetchStudents();
-    } else {
-      tableData.innerHTML = `<p>No view implemented for ${btn.textContent} yet.</p>`;
-    }
-  });
-});
-
-// ----------- STUDENTS MODULE ------------ //
-
 function showAddStudentForm() {
   clearAll();
   formContainer.innerHTML = `
@@ -266,7 +225,6 @@ function showAddStudentForm() {
       .then(() => {
         alert("Student added successfully");
         clearAll();
-        fetchStudents();
       })
       .catch((err) => console.error("Add Student Error:", err));
   };
@@ -278,7 +236,6 @@ function fetchStudents() {
     .then((res) => res.json())
     .then((data) => {
       if (!Array.isArray(data)) throw new Error("Unexpected data format");
-
       if (data.length === 0) {
         tableData.innerHTML = "<p>No students found.</p>";
         return;
@@ -311,18 +268,13 @@ function fetchStudents() {
 
       tableHTML += `</tbody></table>`;
       tableData.innerHTML = tableHTML;
-
-      // Add Show Chart button dynamically
-      const chartBtn = document.createElement("button");
-      chartBtn.textContent = "Show Chart";
-      chartBtn.onclick = showStudentChart;
-      document.querySelector(".actions").appendChild(chartBtn);
     })
     .catch((err) => {
       console.error("Fetch Students Error:", err);
       tableData.innerHTML = "<p>Error loading students.</p>";
     });
 }
+
 
 function showUpdateStudentForm() {
   clearAll();
@@ -379,7 +331,6 @@ function showUpdateStudentForm() {
       .then(() => {
         alert("Student updated successfully");
         clearAll();
-        fetchStudents();
       })
       .catch((err) => console.error("Update Student Error:", err));
   };
@@ -406,95 +357,10 @@ function showDeleteStudentForm() {
         if (!res.ok) throw new Error("Delete failed");
         alert("Student deleted successfully");
         clearAll();
-        fetchStudents();
       })
       .catch((err) => alert(err.message));
   };
 }
-
-function showStudentChart() {
-  clearAll();
-
-  fetch("http://localhost:5000/api/students/chart/data")
-    .then(res => res.json())
-    .then(data => {
-      if (!Array.isArray(data)) throw new Error("Invalid chart data");
-
-      const labels = data.map(d => d.department_name);
-      const counts = data.map(d => Number(d.student_count));
-
-      // Remove old chart if exists
-      document.getElementById('studentChartCanvas')?.remove();
-      document.getElementById('chartTypeSelector')?.remove();
-
-      // Dropdown for chart type
-      const chartSelector = document.createElement("select");
-      chartSelector.id = "chartTypeSelector";
-      chartSelector.innerHTML = `
-        <option value="bar">Bar Chart</option>
-        <option value="pie">Pie Chart</option>
-        <option value="doughnut">Doughnut Chart</option>
-      `;
-      chartSelector.onchange = () => renderStudentChart(chartSelector.value, labels, counts);
-
-      // Canvas for Chart.js
-      const canvas = document.createElement("canvas");
-      canvas.id = "studentChartCanvas";
-      canvas.style.maxWidth = "600px";
-      canvas.style.marginTop = "20px";
-
-      tableData.innerHTML = "<h3>📊 Students per Department</h3>";
-      tableData.appendChild(chartSelector);
-      tableData.appendChild(canvas);
-
-      renderStudentChart("bar", labels, counts);
-    })
-    .catch(err => {
-      console.error("Chart Data Error:", err);
-      tableData.innerHTML = "<p>Failed to load chart data.</p>";
-    });
-}
-
-let currentChart = null;
-function renderStudentChart(type, labels, data) {
-  const ctx = document.getElementById("studentChartCanvas").getContext("2d");
-  if (currentChart) {
-    currentChart.destroy();
-  }
-
-  currentChart = new Chart(ctx, {
-    type: type,
-    data: {
-      labels: labels,
-      datasets: [{
-        label: "Students per Department",
-        data: data,
-        backgroundColor: [
-          "rgba(54, 162, 235, 0.6)",
-          "rgba(255, 99, 132, 0.6)",
-          "rgba(255, 206, 86, 0.6)",
-          "rgba(75, 192, 192, 0.6)",
-          "rgba(153, 102, 255, 0.6)",
-          "rgba(255, 159, 64, 0.6)"
-        ],
-        borderColor: "rgba(0,0,0,0.1)",
-        borderWidth: 1
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { display: true, position: "top" },
-        title: { display: true, text: "Students per Department" }
-      }
-    }
-  });
-}
-
-// Load students on page load
-document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('.sidebar button[data-table="students"]').click();
-});
 
 
 
