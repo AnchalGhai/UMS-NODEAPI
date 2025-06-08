@@ -131,7 +131,8 @@ function showUpdateDepartmentForm() {
   `;
 
   document.getElementById("loadDeptBtn").onclick = () => {
-    const id = document.getElementById("updateDeptId").value.trim();
+    const idField = document.getElementById("updateDeptId");
+    const id = idField.value.trim();
     if (!id) return alert("Enter department ID");
 
     fetch(`http://localhost:5000/api/departments/${id}`)
@@ -142,6 +143,7 @@ function showUpdateDepartmentForm() {
       .then((data) => {
         document.getElementById("updateDeptName").value = data.department_name;
         document.getElementById("updateFormFields").style.display = "block";
+        idField.readOnly = true;
       })
       .catch((err) => alert(err.message));
   };
@@ -150,7 +152,6 @@ function showUpdateDepartmentForm() {
     const id = document.getElementById("updateDeptId").value.trim();
     const name = document.getElementById("updateDeptName").value.trim();
     if (!name) return alert("Enter new department name");
-
     fetch(`http://localhost:5000/api/departments/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -164,6 +165,7 @@ function showUpdateDepartmentForm() {
       .catch((err) => console.error("Update Dept Error:", err));
   };
 }
+
 
 function showDeleteDepartmentForm() {
   clearAll();
@@ -289,7 +291,8 @@ function showUpdateStudentForm() {
   `;
 
   document.getElementById("loadStudentBtn").onclick = () => {
-    const id = document.getElementById("updateStudentId").value.trim();
+    const idField = document.getElementById("updateStudentId");
+    const id = idField.value.trim();
     if (!id) return alert("Enter student ID");
 
     fetch(`http://localhost:5000/api/students/${id}`)
@@ -302,6 +305,7 @@ function showUpdateStudentForm() {
         document.getElementById("updateStudentEmail").value = data.email;
         document.getElementById("updateStudentDeptId").value = data.department_id;
         document.getElementById("updateStudentFields").style.display = "block";
+        idField.readOnly = true;
       })
       .catch((err) => alert(err.message));
   };
@@ -457,7 +461,8 @@ function showUpdateProfessorForm() {
   `;
 
   document.getElementById("loadProfBtn").onclick = () => {
-    const id = document.getElementById("updateProfId").value.trim();
+    const idField = document.getElementById("updateProfId");
+    const id = idField.value.trim();
     if (!id) return alert("Enter professor ID");
 
     fetch(`http://localhost:5000/api/professors/${id}`)
@@ -470,6 +475,7 @@ function showUpdateProfessorForm() {
         document.getElementById("updateProfEmail").value = data.email;
         document.getElementById("updateProfDeptId").value = data.department_id;
         document.getElementById("updateProfFields").style.display = "block";
+        idField.readOnly = true;
       })
       .catch((err) => alert(err.message));
   };
@@ -630,7 +636,8 @@ function showUpdateCourseForm() {
   `;
 
   document.getElementById("loadCourseBtn").onclick = () => {
-    const code = document.getElementById("updateCourseCode").value.trim();
+    const codeField = document.getElementById("updateCourseCode");
+    const code = idField.value.trim();
     if (!code) return alert("Enter course code");
 
     fetch(`http://localhost:5000/api/courses/${code}`)
@@ -643,6 +650,7 @@ function showUpdateCourseForm() {
         document.getElementById("updateCourseCredits").value = data.credits;
         document.getElementById("updateCourseDeptId").value = data.department_id;
         document.getElementById("updateCourseFields").style.display = "block";
+        codeField.readOnly = true;
       })
       .catch((err) => alert(err.message));
   };
@@ -753,7 +761,8 @@ function showUpdateSemesterForm() {
   `;
 
   document.getElementById("loadSemesterBtn").onclick = () => {
-    const id = document.getElementById("updateSemesterId").value.trim();
+    const idField = document.getElementById("updateSemesterId");
+    const id = idField.value.trim();
     if (!id) return alert("Enter semester ID");
 
     fetch(`http://localhost:5000/api/semesters/${id}`)
@@ -765,6 +774,7 @@ function showUpdateSemesterForm() {
         document.getElementById("updateSemesterName").value = data.semester_name;
         document.getElementById("updateSemesterYear").value = data.year;
         document.getElementById("updateSemesterFields").style.display = "block";
+        idField.readOnly = true;
       })
       .catch((err) => alert(err.message));
   };
@@ -938,7 +948,8 @@ function showUpdateClassroomForm() {
   `;
 
   document.getElementById("loadClassroomBtn").onclick = () => {
-    const id = document.getElementById("updateClassroomId").value.trim();
+    const idField = document.getElementById("updateClassroomId");
+    const id = idField.value.trim();
     if (!id) return alert("Enter classroom ID");
 
     fetch(`http://localhost:5000/api/classrooms/${id}`)
@@ -950,6 +961,7 @@ function showUpdateClassroomForm() {
         document.getElementById("updateBuildingName").value = data.building_name;
         document.getElementById("updateRoomNumber").value = data.room_number;
         document.getElementById("updateClassroomFields").style.display = "block";
+        idField.readOnly = true;
       })
       .catch(err => alert(err.message));
   };
