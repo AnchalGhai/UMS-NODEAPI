@@ -37,8 +37,11 @@ const loginAdmin = async (req, res) => {
     if (!isPasswordCorrect) {
       return res.status(401).json({ error: "Incorrect password" });
     }
-
-    res.status(200).json({ message: "Login successful" });
+     return res.json({
+    message: "Login successful",
+    name: admin.name,    // Add this line
+    admin_id: admin.admin_id
+  });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
