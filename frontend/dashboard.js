@@ -25,7 +25,6 @@ sidebarButtons.forEach(btn => {
     currentTable = btn.getAttribute("data-table");
     tableTitle.innerText = capitalize(currentTable);
     clearAll();
-    // Optionally auto-show view on switch
     fetchCurrentTableData();
   };
 });
