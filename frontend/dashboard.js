@@ -8,14 +8,17 @@ if (adminNameSpan) {
 
 const formContainer = document.getElementById("formContainer");
 const tableData = document.getElementById("tableData");
-const tableTitle = document.getElementById("tableTitle");
 const addBtn = document.getElementById("addBtn");
 const updateBtn = document.getElementById("updateBtn");
 const deleteBtn = document.getElementById("deleteBtn");
 const viewBtn = document.getElementById("viewBtn");
 const sidebarButtons = document.querySelectorAll(".sidebar button[data-table]");
+const tableTitle = document.getElementById("tableTitle");
 
 let currentTable = "departments"; // default
+
+
+
 
 // Switch active table on sidebar click
 sidebarButtons.forEach(btn => {
@@ -28,6 +31,7 @@ sidebarButtons.forEach(btn => {
     fetchCurrentTableData();
   };
 });
+
 
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
@@ -1896,6 +1900,76 @@ viewBtn.onclick = () => {
   else if (currentTable === "attendance") fetchAttendance();
 };
 
+let selectedTable = 'departments'; // default table on load
+
+// Bind all sidebar buttons
+document.querySelectorAll('.sidebar button').forEach((button) => {
+  button.addEventListener('click', () => {
+    const table = button.getAttribute('data-table');
+    selectTable(table);
+
+    // Optional: Update table title dynamically
+    document.getElementById('tableTitle').textContent = table.charAt(0).toUpperCase() + table.slice(1);
+  });
+});
+
+function selectTable(tableName) {
+  selectedTable = tableName;
+  console.log("Selected table:", selectedTable);
+
+  // Hide the chart if table changed
+  const chartCanvas = document.getElementById('reportChart');
+  chartCanvas.style.display = "none";
+  if (window.reportChart) {
+    window.reportChart.destroy();
+  }
+
+  // TODO: Optionally load data here too
+}
 
 
+// 🔍 Chart loader based on selectedTable
+async function loadReport() {
+  if (!selectedTable) {
+    alert("Please select a table first.");
+    return;
+  }
 
+  try {
+    const response = await fetch(`/report/${selectedTable}`);
+    const data = await response.json();
+
+    const chartCanvas = document.getElementById('reportChart');
+    chartCanvas.style.display = "block";
+    const ctx = chartCanvas.getContext('2d');
+
+    if (window.reportChart) {
+      window.reportChart.destroy();
+    }
+
+    const labels = data.map(item => item.label);
+    const values = data.map(item => item.value);
+
+    window.reportChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: `Report for ${selectedTable}`,
+          data: values,
+          backgroundColor: 'rgba(54, 162, 235, 0.6)',
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Failed to load report:", error);
+  }
+}

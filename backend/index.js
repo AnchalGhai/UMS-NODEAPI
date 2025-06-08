@@ -127,6 +127,15 @@ try {
   console.error(error.stack);
 }
 
+try {
+  const reportRoutes = require('./routes/reportRoutes');
+  app.use('/api/reports', reportRoutes);
+  console.log("Reports routes loaded");
+} catch (error) {
+  console.error('Failed to load reports routes:', error.message);
+  console.error(error.stack);
+}
+
 
 app.listen(port, () => {
   console.log(`🚀 Server is running on port ${port}`);
