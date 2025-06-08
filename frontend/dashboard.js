@@ -195,10 +195,6 @@ function showDeleteDepartmentForm() {
 
 // ----------- STUDENTS MODULE ------------ //
 
-// Cache DOM elements for reuse
-const formContainer = document.getElementById('formContainer');
-const tableData = document.getElementById('tableData');
-
 // Helper to clear UI sections and reset action buttons
 function clearAll() {
   formContainer.innerHTML = '';
