@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const reportController = require('../controllers/reportController');
+const reportController = require('../controllers/routesController');
 
 // Route 1: Students per department
 router.get('/students-per-department', reportController.getStudentsPerDepartment);
