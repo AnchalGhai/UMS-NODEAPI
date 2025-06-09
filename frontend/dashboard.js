@@ -6,6 +6,7 @@ if (adminNameSpan) {
 }
 
 
+
 const formContainer = document.getElementById("formContainer");
 const tableData = document.getElementById("tableData");
 const addBtn = document.getElementById("addBtn");
@@ -14,6 +15,8 @@ const deleteBtn = document.getElementById("deleteBtn");
 const viewBtn = document.getElementById("viewBtn");
 const sidebarButtons = document.querySelectorAll(".sidebar button[data-table]");
 const tableTitle = document.getElementById("tableTitle");
+const reportSection = document.getElementById("reportSection");
+const actionsDiv = document.querySelector(".actions"); 
 
 let currentTable = "departments"; // default
 
@@ -25,12 +28,27 @@ sidebarButtons.forEach(btn => {
   btn.onclick = () => {
     sidebarButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
-    currentTable = btn.getAttribute("data-table");
+    const table = btn.getAttribute("data-table");
+    currentTable = table;
     tableTitle.innerText = capitalize(currentTable);
     clearAll();
-    fetchCurrentTableData();
+
+    // 👇 Toggle sections based on current table
+    if (currentTable === "reports") {
+      reportSection.style.display = "block";
+      tableData.style.display = "none";
+      formContainer.style.display = "none";
+      actionsDiv.style.display = "none"; // ✅ Hide add/update/delete/view
+    } else {
+      reportSection.style.display = "none";
+      tableData.style.display = "block";
+      formContainer.style.display = "block";
+      actionsDiv.style.display = "flex"; // ✅ Show buttons for other tables
+      fetchCurrentTableData();
+    }
   };
 });
+
 
 
 const logoutBtn = document.getElementById("logoutBtn");
@@ -51,6 +69,7 @@ function clearAll() {
   formContainer.innerHTML = "";
   tableData.innerHTML = "";
 }
+
 
 // ----------- DEPARTMENTS MODULE ------------ //
 
@@ -1900,76 +1919,158 @@ viewBtn.onclick = () => {
   else if (currentTable === "attendance") fetchAttendance();
 };
 
-let selectedTable = 'departments'; // default table on load
+function showStudentsReport() {
+  fetch("http://localhost:5000/api/reports/students")
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.department_name);
+      const values = data.map(item => item.student_count);
+      renderChart("Students per Department", labels, values);
+    });
+}
 
-// Bind all sidebar buttons
-document.querySelectorAll('.sidebar button').forEach((button) => {
-  button.addEventListener('click', () => {
-    const table = button.getAttribute('data-table');
-    selectTable(table);
+function showProfessorsReport() {
+  fetch("http://localhost:5000/api/reports/professors")
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.department_name);
+      const values = data.map(item => item.professor_count);
+      renderChart("Professors per Department", labels, values);
+    });
+}
 
-    // Optional: Update table title dynamically
-    document.getElementById('tableTitle').textContent = table.charAt(0).toUpperCase() + table.slice(1);
-  });
-});
+function showCoursesReport() {
+  fetch("http://localhost:5000/api/reports/courses")
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.department_name);
+      const values = data.map(item => item.course_count);
+      renderChart("Courses per Department", labels, values);
+    });
+}
 
-function selectTable(tableName) {
-  selectedTable = tableName;
-  console.log("Selected table:", selectedTable);
+function showSemestersReport() {
+  fetch("http://localhost:5000/api/reports/enrollments-per-semester")
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.semester_name);
+      const values = data.map(item => item.enrollment_count);
+      renderChart("Enrollments per Semester", labels, values);
+    });
+}
 
-  // Hide the chart if table changed
-  const chartCanvas = document.getElementById('reportChart');
-  chartCanvas.style.display = "none";
-  if (window.reportChart) {
-    window.reportChart.destroy();
-  }
+function showClassroomsReport() {
+  fetch("http://localhost:5000/api/reports/schedules-per-classroom")
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.room_number);
+      const values = data.map(item => item.schedule_count);
+      renderChart("Schedules per Classroom", labels, values);
+    });
+}
 
-  // TODO: Optionally load data here too
+function showSchedulesReport() {
+  fetch("http://localhost:5000/api/reports/schedules-per-day")
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.day_of_week);
+      const values = data.map(item => item.class_count);
+      renderChart("Classes per Day of Week", labels, values);
+    });
+}
+
+function showGradesReport() {
+  fetch("http://localhost:5000/api/reports/grade-distribution")
+    .then(res => res.json())
+    .then(data => {
+      const labels = data.map(item => item.grade);
+      const values = data.map(item => item.count);
+      renderChart("Grade Distribution", labels, values);
+    });
+}
+
+function showAttendanceReport() {
+  fetch("http://localhost:5000/api/reports/attendance-summary")
+    .then(res => res.json())
+    .then(data => {
+      const labels = ["Present", "Absent", "Late"];
+      const values = [data.present, data.absent, data.late];
+      renderChart("Attendance Summary", labels, values);
+    });
 }
 
 
-// 🔍 Chart loader based on selectedTable
-async function loadReport() {
-  if (!selectedTable) {
-    alert("Please select a table first.");
-    return;
-  }
 
-  try {
-    const response = await fetch(`/report/${selectedTable}`);
-    const data = await response.json();
+let chart;
 
-    const chartCanvas = document.getElementById('reportChart');
-    chartCanvas.style.display = "block";
-    const ctx = chartCanvas.getContext('2d');
+function renderChart(title, labels, values) {
+  const canvas = document.getElementById("reportChart");
+  canvas.style.display = "block";
+  const ctx = canvas.getContext("2d");
 
-    if (window.reportChart) {
-      window.reportChart.destroy();
-    }
+  if (chart) chart.destroy();
 
-    const labels = data.map(item => item.label);
-    const values = data.map(item => item.value);
-
-    window.reportChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: `Report for ${selectedTable}`,
-          data: values,
-          backgroundColor: 'rgba(54, 162, 235, 0.6)',
-        }]
+  chart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: title,
+        data: values,
+        backgroundColor: "rgba(54, 162, 235, 0.6)",
+        borderColor: "rgba(54, 162, 235, 1)",
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 }
+        }
       },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
+      plugins: {
+        title: {
+          display: true,
+          text: title
         }
       }
-    });
-  } catch (error) {
-    console.error("Failed to load report:", error);
-  }
+    }
+  });
 }
+
+document.getElementById("reportSelect").addEventListener("change", function () {
+  const selected = this.value;
+
+  switch (selected) {
+    case "students":
+      showStudentsReport();
+      break;
+    case "professors":
+      showProfessorsReport();
+      break;
+    case "courses":
+      showCoursesReport();
+      break;
+    case "semesters":
+      showSemestersReport();
+      break;
+    case "classrooms":
+      showClassroomsReport();
+      break;
+    case "schedules":
+      showSchedulesReport();
+      break;
+    case "grades":
+      showGradesReport();
+      break;
+    case "attendance":
+      showAttendanceReport();
+      break;
+    default:
+      break;
+  }
+});
+
+

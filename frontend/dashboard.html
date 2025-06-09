@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -20,6 +20,8 @@
     <button data-table="grades">Grades</button>
     <button data-table="enrollments">Enrollments</button>
     <button data-table="attendance">Attendance</button>
+    <button data-table="reports" id="reportsSidebarBtn">Reports</button>
+
   </div>
 
   <div class="content">
@@ -38,6 +40,22 @@
     </div>
     <div id="formContainer"></div>
     <div id="tableData"></div>
+     <div id="reportSection" style="display: none;">
+  <h2>Reports</h2>
+  <select id="reportSelect">
+    <option value="">-- Select Report --</option>
+    <option value="students">Students per Department</option>
+    <option value="professors">Professors per Department</option>
+    <option value="courses">Courses per Department</option>
+    <option value="semesters">Enrollments per Semester</option>
+    <option value="classrooms">Schedules per Classroom</option>
+    <option value="schedules">Classes per Day of Week</option>
+    <option value="grades">Grade Distribution</option>
+    <option value="attendance">Attendance Summary</option>
+  </select>
+
+  <canvas id="reportChart" width="400" height="200" style="display:none;"></canvas>
+</div>
   </div>
 
   <script src="dashboard.js"></script>
