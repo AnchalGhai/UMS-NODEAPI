@@ -442,7 +442,7 @@ function fetchProfessors() {
               <th>Professor ID</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Department ID</th>
+              <th>Department Name</th>
             </tr>
           </thead>
           <tbody>
@@ -454,7 +454,7 @@ function fetchProfessors() {
             <td>${p.professor_id}</td>
             <td>${p.name}</td>
             <td>${p.email}</td>
-            <td>${p.department_id}</td>
+            <td>${p.department_name}</td>
           </tr>
         `;
       });

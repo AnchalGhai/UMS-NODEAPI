@@ -31,7 +31,6 @@ exports.addDepartment = async (req, res) => {
 exports.updateDepartment = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { department_name } = req.body;
-  console.log("Update request for id:", id, "with name:", department_name);
   try {
     const result = await pool.query(
       'UPDATE departments SET department_name = $1 WHERE dept_id = $2 RETURNING *',

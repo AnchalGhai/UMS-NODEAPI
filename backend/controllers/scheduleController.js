@@ -81,64 +81,6 @@ exports.updateSchedule = async (req, res) => {
   }
 };
 
-// Update a schedule (including composite key fields)
-/*exports.updateSchedule = async (req, res) => {
-  const {
-    new_course_code,
-    new_professor_id,
-    new_semester_id,
-    new_day_of_week,
-    new_start_time,
-    classroom_id,
-    end_time,
-  } = req.body;
-
-  const { course_code, professor_id, semester_id, day_of_week, start_time } = req.params;
-
-  try {
-    const query = `
-      UPDATE schedules
-      SET course_code = $1,
-          professor_id = $2,
-          semester_id = $3,
-          day_of_week = $4,
-          start_time = $5,
-          classroom_id = $6,
-          end_time = $7
-      WHERE course_code = $8 AND professor_id = $9 AND semester_id = $10 
-        AND day_of_week = $11 AND start_time = $12
-      RETURNING *;
-    `;
-
-    const values = [
-      new_course_code,
-      new_professor_id,
-      new_semester_id,
-      new_day_of_week,
-      new_start_time,
-      classroom_id,
-      end_time,
-      course_code,
-      professor_id,
-      semester_id,
-      day_of_week,
-      start_time,
-    ];
-
-    const result = await pool.query(query, values);
-
-    if (result.rowCount === 0) {
-      return res.status(404).send("Schedule not found or no change in keys");
-    }
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error("Error updating schedule:", err.message);
-    res.status(500).send("Server error");
-  }
-};
-*/
-
 
 
 // Delete a schedule (by composite key)

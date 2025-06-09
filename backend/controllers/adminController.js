@@ -1,10 +1,6 @@
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+//const jwt = require("jsonwebtoken");
 const pool = require("../db");
-/*console.log(pool);*/
-
-console.log("🧪 pool:", pool);
-console.log("🔎 typeof pool.query:", typeof pool.query); 
 
 const signup = async (req, res) => {
   const { name, email, admin_id, password } = req.body;

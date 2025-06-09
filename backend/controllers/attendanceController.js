@@ -2,7 +2,6 @@ const pool = require('../db');
 
 // Get all attendance
 exports.getAllAttendance = async (req, res) => {
-  // Local date formatting function (same as getAttendance)
   function formatDateLocal(date) {
     const d = new Date(date);
     const offsetMs = d.getTimezoneOffset() * 60 * 1000;

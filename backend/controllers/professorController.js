@@ -2,10 +2,10 @@
 const pool = require('../db');
 
 // GET all professors
-const getAllProfessors = async (req, res) => {
+exports.getAllProfessors = async (req, res) => {
   try {
     const result = await pool.query(`
-      SELECT p.professor_id, p.name, p.email, p.department_id, d.department_name
+      SELECT p.professor_id, p.name, p.email, d.department_name
       FROM professors p
       LEFT JOIN departments d ON p.department_id = d.dept_id
       ORDER BY p.professor_id
@@ -19,7 +19,7 @@ const getAllProfessors = async (req, res) => {
 };
 
 // GET professor by ID
-const getProfessorById = async (req, res) => {
+exports.getProfessorById = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query(`SELECT * FROM professors WHERE professor_id = $1`, [id]);
@@ -32,7 +32,7 @@ const getProfessorById = async (req, res) => {
 };
 
 // POST add professor
-const addProfessor = async (req, res) => {
+exports.addProfessor = async (req, res) => {
   try {
     const { name, email, department_id } = req.body;
     const result = await pool.query(
@@ -48,7 +48,7 @@ const addProfessor = async (req, res) => {
 };
 
 // PUT update professor
-const updateProfessor = async (req, res) => {
+exports.updateProfessor = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, department_id } = req.body;
@@ -66,7 +66,7 @@ const updateProfessor = async (req, res) => {
 };
 
 // DELETE professor
-const deleteProfessor = async (req, res) => {
+exports.deleteProfessor = async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query(`DELETE FROM professors WHERE professor_id = $1 RETURNING *`, [id]);
@@ -78,11 +78,4 @@ const deleteProfessor = async (req, res) => {
   }
 };
 
-module.exports = {
-  getAllProfessors,
-  getProfessorById,
-  addProfessor,
-  updateProfessor,
-  deleteProfessor
-};
 
