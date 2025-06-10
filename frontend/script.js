@@ -35,8 +35,6 @@ if (signupForm) {
     }
   });
 }
-
-
 // Login form handling
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
