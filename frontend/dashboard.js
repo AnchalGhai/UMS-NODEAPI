@@ -27,23 +27,21 @@ let currentTable = "departments"; // default
 sidebarButtons.forEach(btn => {
   btn.onclick = () => {
     sidebarButtons.forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
+    btn.classList.add("active");   //adding the active class to currently clicked button  
     const table = btn.getAttribute("data-table");
     currentTable = table;
     tableTitle.innerText = capitalize(currentTable);
     clearAll();
-
-    // 👇 Toggle sections based on current table
-    if (currentTable === "reports") {
+    if (currentTable === "reports") {     //controls which parts of the dashboard are visible.
       reportSection.style.display = "block";
       tableData.style.display = "none";
       formContainer.style.display = "none";
-      actionsDiv.style.display = "none"; // ✅ Hide add/update/delete/view
+      actionsDiv.style.display = "none"; //  Hide add/update/delete/view
     } else {
       reportSection.style.display = "none";
       tableData.style.display = "block";
       formContainer.style.display = "block";
-      actionsDiv.style.display = "flex"; // ✅ Show buttons for other tables
+      actionsDiv.style.display = "flex"; //  Show buttons for other tables
       fetchCurrentTableData();
     }
   };

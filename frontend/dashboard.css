@@ -1,4 +1,3 @@
-/* Import Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 body {
@@ -56,7 +55,7 @@ body {
   flex: 1;
   padding: 30px 40px;
   overflow-y: auto;
-  background-color: #f9fbfd;
+  background-color: #c1d9ec;
 }
 
 .header-row {
@@ -128,7 +127,7 @@ body {
 }
 
 #tableData {
-  background-color: #ffffff;
+  background-color: #a4bbe2;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);

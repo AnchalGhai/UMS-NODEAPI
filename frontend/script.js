@@ -1,4 +1,3 @@
-// Adjust your backend URL here
 const BASE_URL = "http://localhost:5000/api/admin";
 
 // Signup form handling
@@ -10,7 +9,7 @@ if (signupForm) {
     const formData = new FormData(signupForm);
     const data = {
       name: formData.get("name"),
-      admin_id: formData.get("id"),  // make sure this matches backend field name
+      admin_id: formData.get("id"), 
       email: formData.get("email"),
       password: formData.get("password"),
     };
@@ -37,7 +36,6 @@ if (signupForm) {
   });
 }
 // Login form handling
-// Login form handling
 const loginForm = document.getElementById("loginForm");
 if (loginForm) {
   loginForm.addEventListener("submit", async (e) => {
@@ -54,19 +52,16 @@ if (loginForm) {
       });
 
       const data = await res.json();
-console.log("Login Response from backend:", data);
+      console.log("Login Response from backend:", data);
       if (res.ok) {
         document.getElementById("message").innerText = "✅ Login successful!";
-
-        // ✅ Store admin name from response
          localStorage.setItem("adminName", data.name);
          localStorage.setItem("adminId", data.admin_id);
-        // ✅ Redirect to dashboard
         setTimeout(() => {
           window.location.href = "dashboard.html";
         }, 1000);
       } else {
-        document.getElementById("message").innerText = `❌ ${data.error || "Login failed"}`;
+        document.getElementById("message").innerText = `❌ ${"Login failed"}`;
       }
     } catch (error) {
       document.getElementById("message").innerText = "❌ Network error";
