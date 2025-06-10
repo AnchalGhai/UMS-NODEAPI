@@ -5,43 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>University Management Dashboard</title>
   <link rel="stylesheet" href="dashboard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
   <div class="sidebar">
-    <h1>Dashboard</h1>
-    <button class="active" data-table="departments">Departments</button>
-    <button data-table="students">Students</button>
-    <button data-table="professors">Professors</button>
-    <button data-table="courses">Courses</button>
-    <button data-table="semesters">Semesters</button>
-    <button data-table="classrooms">Classrooms</button>
-    <button data-table="schedules">Schedules</button>
-    <button data-table="grades">Grades</button>
-    <button data-table="enrollments">Enrollments</button>
-    <button data-table="attendance">Attendance</button>
-    <button data-table="reports" id="reportsSidebarBtn">Reports</button>
-
+    <h1><i class="fa fa-chart-line"></i> Dashboard</h1>
+    <button class="active" data-table="departments"><i class="fa fa-building"></i> Departments</button>
+    <button data-table="students"><i class="fa fa-user-graduate"></i> Students</button>
+    <button data-table="professors"><i class="fa fa-chalkboard-teacher"></i> Professors</button>
+    <button data-table="courses"><i class="fa fa-book"></i> Courses</button>
+    <button data-table="semesters"><i class="fa fa-calendar-alt"></i> Semesters</button>
+    <button data-table="classrooms"><i class="fa fa-school"></i> Classrooms</button>
+    <button data-table="schedules"><i class="fa fa-clock"></i> Schedules</button>
+    <button data-table="grades"><i class="fa fa-clipboard-list"></i> Grades</button>
+    <button data-table="enrollments"><i class="fa fa-check-circle"></i> Enrollments</button>
+    <button data-table="attendance"><i class="fa fa-calendar-check"></i> Attendance</button>
+    <button data-table="reports" id="reportsSidebarBtn"><i class="fa fa-chart-pie"></i> Reports</button>
   </div>
 
   <div class="content">
     <div class="header-row">
       <h1>Welcome <span id="adminName">Admin</span>!</h1>
-      <button id="logoutBtn">Logout</button>
+      <button id="logoutBtn"><i class="fa fa-sign-out-alt"></i> Logout</button>
     </div>
 
     <h2 id="tableTitle">Departments</h2>
 
     <div class="actions">
-      <button id="addBtn">Add</button>
-      <button id="updateBtn">Update</button>
-      <button id="deleteBtn">Delete</button>
-      <button id="viewBtn">View</button>
+      <button id="addBtn"><i class="fa fa-plus-circle"></i> Add</button>
+      <button id="updateBtn"><i class="fa fa-edit"></i> Update</button>
+      <button id="deleteBtn"><i class="fa fa-trash"></i> Delete</button>
+      <button id="viewBtn"><i class="fa fa-eye"></i> View</button>
     </div>
     <div id="formContainer"></div>
     <div id="tableData"></div>
      <div id="reportSection" style="display: none;">
-  <h2>Reports</h2>
+ <h2><i class="fa fa-chart-bar"></i> Reports</h2>
   <select id="reportSelect">
     <option value="">-- Select Report --</option>
     <option value="students">Students per Department</option>
