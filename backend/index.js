@@ -1,78 +1,137 @@
-
-CREATE TABLE admins (
-    admin_id VARCHAR(50) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password TEXT NOT NULL
-);
+console.log("index.js started");
+require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
 
 
-CREATE TABLE departments (
-    department_id SERIAL PRIMARY KEY,
-    dept_name VARCHAR(100) UNIQUE NOT NULL
-);
+const app = express();
+const port = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.send("University Management Backend is running!");
+});
 
 
-CREATE TABLE students (
-    student_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    department_id INT REFERENCES departments(dept_id) ON DELETE SET NULL
-);
+try {
+  const adminRoutes = require("./routes/admin");
+  app.use("/api/admin", adminRoutes);
+  console.log("Admin routes loaded");
+} catch (error) {
+  console.error("Failed to load admin routes:", error.message);
+  console.error(error.stack);
+}
 
 
-CREATE TABLE professors (
-    professor_id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    department_id INT REFERENCES departments(dept_id) ON DELETE SET NULL
-);
-
-CREATE TABLE courses (
-    course_code VARCHAR(20) PRIMARY KEY,
-    course_name VARCHAR(100) NOT NULL,
-    credits INT CHECK (credits > 0),
-    department_id INT REFERENCES departments(dept_id) ON DELETE SET NULL
-);
-
-CREATE TABLE semesters (
-    semester_id SERIAL PRIMARY KEY,
-    semester_name VARCHAR(50) NOT NULL,
-    year INT CHECK (year >= 2000)
-);
-
-CREATE TABLE classrooms (
-    classroom_id VARCHAR(50) PRIMARY KEY,
-    building_name VARCHAR(100) NOT NULL,
-    room_number VARCHAR(10) NOT NULL
-);
+try {
+  const departmentRoutes = require("./routes/department");
+  app.use("/api/departments", departmentRoutes);
+  console.log("Department routes loaded");
+} catch (error) {
+  console.error("Failed to load department routes:", error.message);
+  console.error(error.stack);
+}
 
 
-CREATE TABLE schedules (
-    course_code VARCHAR(20) REFERENCES courses(course_code) ON DELETE CASCADE,
-    professor_id INT REFERENCES professors(professor_id) ON DELETE SET NULL,
-    classroom_id VARCHAR(50) REFERENCES classrooms(classroom_id) ON DELETE SET NULL,
-    semester_id INT REFERENCES semesters(semester_id) ON DELETE CASCADE,
-    day_of_week VARCHAR(10) CHECK (day_of_week IN ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')),
-    start_time TIME NOT NULL,
-    end_time TIME NOT NULL,
-    PRIMARY KEY (course_code, professor_id, semester_id, day_of_week, start_time)
-);
+try {
+  const studentRoutes = require('./routes/studentRoutes');
+  app.use('/api/students', studentRoutes);
+  console.log("Student routes loaded");
+} catch (error) {
+  console.error(" Failed to load student routes:", error.message);
+  console.error(error.stack);
+}
 
 
-CREATE TABLE grades (
-    student_id INT REFERENCES students(student_id) ON DELETE CASCADE,
-    course_code VARCHAR(20) REFERENCES courses(course_code) ON DELETE CASCADE,
-    semester_id INT REFERENCES semesters(semester_id) ON DELETE CASCADE,
-    grade VARCHAR(2) CHECK (grade IN ('A', 'B', 'C', 'D', 'F', 'I', 'W')),
-    PRIMARY KEY (student_id, course_code, semester_id)
-);
+try {
+  const professorRoutes = require('./routes/professorRoutes');
+  app.use('/api/professors', professorRoutes);
+  console.log("Professor routes loaded");
+} catch (error) {
+  console.error('Failed to load professor routes:', error.message);
+  console.error(error.stack);
+}
 
-CREATE TABLE attendance (
-    student_id INT REFERENCES students(student_id) ON DELETE CASCADE,
-    course_code VARCHAR(20) REFERENCES courses(course_code) ON DELETE CASCADE,
-    semester_id INT REFERENCES semesters(semester_id) ON DELETE CASCADE,
-    date DATE NOT NULL,
-    status VARCHAR(10) CHECK (status IN ('Present', 'Absent', 'Late')),
-    PRIMARY KEY (student_id, course_code, semester_id, date)
-);
+
+try {
+  const courseRoutes = require('./routes/courseRoutes');
+  app.use('/api/courses', courseRoutes);
+  console.log("Course routes loaded");
+} catch (error) {
+  console.error('Failed to load course routes:', error.message);
+  console.error(error.stack);
+}
+
+
+try {
+  const semesterRoutes = require('./routes/semesterRoutes');
+  app.use('/api/semesters', semesterRoutes);
+  console.log("Semester routes loaded");
+} catch (error) {
+  console.error('Failed to load semester routes:', error.message);
+  console.error(error.stack);
+}
+
+try {
+  const classroomRoutes = require('./routes/classroomRoutes');
+  app.use('/api/classrooms', classroomRoutes);
+  console.log("Classroom routes loaded");
+} catch (error) {
+  console.error('Failed to load classroom routes:', error.message);
+  console.error(error.stack);
+}
+
+try {
+  const scheduleRoutes = require('./routes/scheduleRoutes');
+  app.use('/api/schedules', scheduleRoutes);
+  console.log("Schedule routes loaded");
+} catch (error) {
+  console.error('Failed to load schedule routes:', error.message);
+  console.error(error.stack);
+}
+
+
+try {
+  const gradeRoutes = require('./routes/gradesRoutes');
+  app.use('/api/grades', gradeRoutes);
+  console.log("Grades routes loaded");
+} catch (error) {
+  console.error('Failed to load grades routes:', error.message);
+  console.error(error.stack);
+}
+
+
+try {
+  const enrollmentsRoutes = require('./routes/enrollmentsRoutes');
+  app.use('/api/enrollments', enrollmentsRoutes);
+  console.log("Enrollments routes loaded");
+} catch (error) {
+  console.error('Failed to load enrollments routes:', error.message);
+  console.error(error.stack);
+}
+
+
+try {
+  const attendanceRoutes = require('./routes/attendanceRoutes');
+  app.use('/api/attendance', attendanceRoutes);
+  console.log("Attendance routes loaded");
+} catch (error) {
+  console.error('Failed to load attendance routes:', error.message);
+  console.error(error.stack);
+}
+
+try {
+  const reportRoutes = require('./routes/reportRoutes');
+  app.use('/api/reports', reportRoutes);
+  console.log("Reports routes loaded");
+} catch (error) {
+  console.error('Failed to load reports routes:', error.message);
+  console.error(error.stack);
+}
+
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
