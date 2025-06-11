@@ -10,13 +10,12 @@ function formatDateToYYYYMMDD(date) {
   return `${year}-${month}-${day}`;
 }
 
-// Format a single enrollment row
 const formatEnrollment = (enrollment) => ({
   ...enrollment,
   enrollment_date: enrollment.enrollment_date.toISOString().split('T')[0]
 });
 
-// Get all enrollments
+
 exports.getAllEnrollments = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM enrollments');
@@ -30,7 +29,7 @@ exports.getAllEnrollments = async (req, res) => {
   }
 };
 
-// getEnrollment
+
 exports.getEnrollment = async (req, res) => {
   const { student_id, course_code, semester_id } = req.params;
   try {
@@ -49,7 +48,7 @@ exports.getEnrollment = async (req, res) => {
   }
 };
 
-// Create new enrollment
+
 exports.createEnrollment = async (req, res) => {
   const { student_id, course_code, semester_id, enrollment_date } = req.body;
   try {
@@ -63,7 +62,7 @@ exports.createEnrollment = async (req, res) => {
   }
 };
 
-// Update enrollment
+
 exports.updateEnrollment = async (req, res) => {
   const { student_id, course_code, semester_id } = req.params;
   const { enrollment_date } = req.body;
@@ -87,7 +86,7 @@ exports.updateEnrollment = async (req, res) => {
   }
 };
 
-// Delete enrollment
+
 exports.deleteEnrollment = async (req, res) => {
   const { student_id, course_code, semester_id } = req.params;
   try {

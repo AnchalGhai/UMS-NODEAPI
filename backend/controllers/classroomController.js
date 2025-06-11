@@ -1,6 +1,6 @@
 const pool = require('../db');
 
-// Get all classrooms
+
 exports.getAllClassrooms = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM classrooms');
@@ -11,7 +11,7 @@ exports.getAllClassrooms = async (req, res) => {
   }
 };
 
-// Get single classroom by ID
+
 exports.getClassroomById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -24,7 +24,7 @@ exports.getClassroomById = async (req, res) => {
   }
 };
 
-// Add a new classroom
+
 exports.addClassroom = async (req, res) => {
   const { classroom_id, building_name, room_number } = req.body;
   try {
@@ -39,7 +39,7 @@ exports.addClassroom = async (req, res) => {
   }
 };
 
-// Update a classroom
+
 exports.updateClassroom = async (req, res) => {
   const { id } = req.params;
   const { building_name, room_number } = req.body;
@@ -58,7 +58,6 @@ exports.updateClassroom = async (req, res) => {
   }
 };
 
-// Delete a classroom
 exports.deleteClassroom = async (req, res) => {
   const { id } = req.params;
   try {

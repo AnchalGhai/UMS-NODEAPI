@@ -1,4 +1,4 @@
-const pool = require('../db'); // or wherever your DB pool is
+const pool = require('../db'); 
 
 exports.getDepartments = async (req, res) => {
   try {
@@ -13,7 +13,7 @@ res.json(result.rows);
 };
 
 
-// ADD department
+
 exports.addDepartment = async (req, res) => {
   const { department_name } = req.body;
   try {
@@ -27,7 +27,7 @@ exports.addDepartment = async (req, res) => {
   }
 };
 
-// UPDATE department by id
+
 exports.updateDepartment = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { department_name } = req.body;
@@ -47,7 +47,7 @@ exports.updateDepartment = async (req, res) => {
   }
 };
 
-// DELETE department by id
+
 exports.deleteDepartment = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   try {
@@ -66,7 +66,7 @@ exports.deleteDepartment = async (req, res) => {
   }
 };
 
-// GET department by id
+
 exports.getDepartmentById = async (req, res) => {
   const id = parseInt(req.params.id, 10);
   try {

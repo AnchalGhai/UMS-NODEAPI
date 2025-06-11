@@ -1,6 +1,6 @@
 const pool = require('../db');
 
-// Get all attendance
+
 exports.getAllAttendance = async (req, res) => {
   function formatDateLocal(date) {
     const d = new Date(date);
@@ -22,7 +22,6 @@ exports.getAllAttendance = async (req, res) => {
 };
 
 
-// Get a specific attendance record
 exports.getAttendance = async (req, res) => {
   const { student_id, course_code, semester_id, date } = req.params;
 
@@ -54,7 +53,7 @@ exports.getAttendance = async (req, res) => {
 };
 
 
-// Add a new attendance record
+
 exports.createAttendance = async (req, res) => {
   const { student_id, course_code, semester_id, date, status } = req.body;
   try {
@@ -69,7 +68,7 @@ exports.createAttendance = async (req, res) => {
   }
 };
 
-// Update an attendance record
+
 exports.updateAttendance = async (req, res) => {
   const { student_id, course_code, semester_id, date } = req.params;
   const { status } = req.body;
@@ -89,7 +88,7 @@ exports.updateAttendance = async (req, res) => {
   }
 };
 
-// Delete an attendance record
+
 exports.deleteAttendance = async (req, res) => {
   const { student_id, course_code, semester_id, date } = req.params;
 

@@ -1,6 +1,6 @@
 const pool = require('../db');
 
-// 1. Students per Department
+
 exports.getStudentCountPerDepartment = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -17,7 +17,7 @@ exports.getStudentCountPerDepartment = async (req, res) => {
   }
 };
 
-// 2. Professors per Department
+
 exports.getProfessorCountPerDepartment = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -34,7 +34,7 @@ exports.getProfessorCountPerDepartment = async (req, res) => {
   }
 };
 
-// 3. Courses per Department
+
 exports.getCourseCountPerDepartment = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -51,7 +51,7 @@ exports.getCourseCountPerDepartment = async (req, res) => {
   }
 };
 
-// 4. Enrollments per Semester
+
 exports.getEnrollmentsPerSemester = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -68,7 +68,6 @@ exports.getEnrollmentsPerSemester = async (req, res) => {
   }
 };
 
-// 5. Schedules per Classroom
 exports.getSchedulesPerClassroom = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -85,7 +84,7 @@ exports.getSchedulesPerClassroom = async (req, res) => {
   }
 };
 
-// 6. Classes per Day of Week
+
 exports.getSchedulesPerDay = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -101,7 +100,7 @@ exports.getSchedulesPerDay = async (req, res) => {
   }
 };
 
-// 7. Grade Distribution
+
 exports.getGradeDistribution = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -117,7 +116,7 @@ exports.getGradeDistribution = async (req, res) => {
   }
 };
 
-// 8. Attendance Summary
+
 exports.getAttendanceSummary = async (req, res) => {
   try {
     const result = await pool.query(`

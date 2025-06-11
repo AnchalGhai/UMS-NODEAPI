@@ -1,7 +1,7 @@
-//console.log('📂 professorController.js is being loaded');
+
 const pool = require('../db');
 
-// GET all professors
+
 exports.getAllProfessors = async (req, res) => {
   try {
     const result = await pool.query(`
@@ -18,7 +18,7 @@ exports.getAllProfessors = async (req, res) => {
   }
 };
 
-// GET professor by ID
+
 exports.getProfessorById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -31,7 +31,7 @@ exports.getProfessorById = async (req, res) => {
   }
 };
 
-// POST add professor
+
 exports.addProfessor = async (req, res) => {
   try {
     const { name, email, department_id } = req.body;
@@ -47,7 +47,7 @@ exports.addProfessor = async (req, res) => {
   }
 };
 
-// PUT update professor
+
 exports.updateProfessor = async (req, res) => {
   try {
     const { id } = req.params;
@@ -65,7 +65,7 @@ exports.updateProfessor = async (req, res) => {
   }
 };
 
-// DELETE professor
+
 exports.deleteProfessor = async (req, res) => {
   try {
     const { id } = req.params;

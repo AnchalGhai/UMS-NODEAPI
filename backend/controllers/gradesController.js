@@ -1,6 +1,6 @@
 const pool = require('../db');
 
-// Get all grades
+
 exports.getAllGrades = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM grades');
@@ -11,7 +11,7 @@ exports.getAllGrades = async (req, res) => {
   }
 };
 
-// Get one grade by composite key
+
 exports.getGrade = async (req, res) => {
   const { student_id, course_code, semester_id } = req.params;
   try {
@@ -33,7 +33,6 @@ exports.getGrade = async (req, res) => {
   }
 };
 
-// Create a new grade
 exports.createGrade = async (req, res) => {
   const { student_id, course_code, semester_id, grade } = req.body;
   try {
@@ -52,7 +51,7 @@ exports.createGrade = async (req, res) => {
   }
 };
 
-// Update grade value only
+
 exports.updateGrade = async (req, res) => {
   const { student_id, course_code, semester_id } = req.params;
   const { grade } = req.body;
@@ -78,7 +77,7 @@ exports.updateGrade = async (req, res) => {
   }
 };
 
-// Delete grade
+
 exports.deleteGrade = async (req, res) => {
   const { student_id, course_code, semester_id } = req.params;
 

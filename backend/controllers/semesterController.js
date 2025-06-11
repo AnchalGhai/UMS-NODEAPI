@@ -1,4 +1,4 @@
-// controllers/semesterController.js
+
 const pool = require("../db");
 
 exports.getAllSemesters = async (req, res) => {

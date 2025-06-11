@@ -1,6 +1,6 @@
 const pool = require('../db');
 
-// Create a new course
+
 exports.createCourse = async (req, res) => {
   const { course_code, course_name, credits, department_id } = req.body;
   try {
@@ -16,7 +16,7 @@ exports.createCourse = async (req, res) => {
   }
 };
 
-// Get all courses
+
 exports.getCourses = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM courses ORDER BY course_code');
@@ -27,7 +27,7 @@ exports.getCourses = async (req, res) => {
   }
 };
 
-// Get course by course_code
+
 exports.getCourseByCode = async (req, res) => {
   const { course_code } = req.params;
   try {
@@ -42,7 +42,7 @@ exports.getCourseByCode = async (req, res) => {
   }
 };
 
-// Update course by course_code
+
 exports.updateCourse = async (req, res) => {
   const { course_code } = req.params;
   const { course_name, credits, department_id } = req.body;
@@ -62,7 +62,7 @@ exports.updateCourse = async (req, res) => {
   }
 };
 
-// Delete course by course_code
+
 exports.deleteCourse = async (req, res) => {
   const { course_code } = req.params;
   try {

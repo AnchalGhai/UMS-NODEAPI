@@ -34,7 +34,7 @@ const loginAdmin = async (req, res) => {
     }
      return res.json({
     message: "Login successful",
-    name: admin.name,    // Add this line
+    name: admin.name,   
     admin_id: admin.admin_id
   });
   } catch (err) {

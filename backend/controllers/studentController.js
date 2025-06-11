@@ -1,6 +1,5 @@
 const pool = require('../db');
 
-// CREATE Student
 exports.createStudent = async (req, res) => {
   try {
     const { name, email, department_id } = req.body;
@@ -14,7 +13,6 @@ exports.createStudent = async (req, res) => {
   }
 };
 
-// GET All Students
 exports.getAllStudents = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM students');
@@ -24,7 +22,6 @@ exports.getAllStudents = async (req, res) => {
   }
 };
 
-// GET Student by ID
 exports.getStudentById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -38,7 +35,7 @@ exports.getStudentById = async (req, res) => {
   }
 };
 
-// UPDATE Student
+
 exports.updateStudent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -56,7 +53,7 @@ exports.updateStudent = async (req, res) => {
   }
 };
 
-// DELETE Student
+
 exports.deleteStudent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -70,21 +67,8 @@ exports.deleteStudent = async (req, res) => {
   }
 };
 
-// ✅ Chart Data Controller
-exports.getStudentCountPerDepartment = async (req, res) => {
-  try {
-    const result = await pool.query(`
-      SELECT d.name AS department_name, COUNT(s.student_id) AS student_count
-      FROM departments d
-      LEFT JOIN students s ON d.department_id = s.department_id
-      GROUP BY d.name
-      ORDER BY d.name
-    `);
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
+
+
 
 
 

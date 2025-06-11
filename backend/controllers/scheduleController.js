@@ -1,6 +1,6 @@
-const pool = require('../db'); // your PostgreSQL pool connection
+const pool = require('../db'); 
 
-// Get all schedules
+
 exports.getAllSchedules = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM schedules');
@@ -11,7 +11,7 @@ exports.getAllSchedules = async (req, res) => {
   }
 };
 
-// Get schedule by composite key params
+
 exports.getSchedule = async (req, res) => {
   const { course_code, professor_id, semester_id, day_of_week, start_time } = req.params;
   try {
@@ -34,7 +34,7 @@ exports.getSchedule = async (req, res) => {
   }
 };
 
-// Create a new schedule
+
 exports.createSchedule = async (req, res) => {
   const { course_code, professor_id, classroom_id, semester_id, day_of_week, start_time, end_time } = req.body;
 
@@ -54,7 +54,7 @@ exports.createSchedule = async (req, res) => {
   }
 };
 
-// Update a schedule (identified by composite key)
+
 exports.updateSchedule = async (req, res) => {
   const { course_code, professor_id, semester_id, day_of_week, start_time } = req.params;
   const { classroom_id, end_time } = req.body;
@@ -83,7 +83,7 @@ exports.updateSchedule = async (req, res) => {
 
 
 
-// Delete a schedule (by composite key)
+
 exports.deleteSchedule = async (req, res) => {
   const { course_code, professor_id, semester_id, day_of_week, start_time } = req.params;
 
